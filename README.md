@@ -34,6 +34,10 @@ The MATLAB files present in this repo must be run from the MATLAB editor applica
 
 The 3D LiDAR simulation is conducted using the MATLAB UAV toolbox. MATLAB requires 4 corners of a rect to create a mesh. The CSV file contains the start and end coordinates for a rect. The .mat files contain the 4 corners of the rect.
 
+### Example PointCloud from Cityscape
+
+![PointCloud visualisation](./pointcloud.png)
+
 ### Output File Structure
 
 ```
