@@ -4,6 +4,7 @@ CLI for generating data
 
 import argparse
 from cityscapes import batch_export
+from drone import generate_positions
 from pathlib import Path
 
 
@@ -13,6 +14,16 @@ def generate_cityscapes(args):
         path.mkdir(parents=True)
 
     batch_export(path, args.num_cities, args.map_size, args.prefix)
+
+
+def generate_drone_positions(args):
+    cityscapes_dir = Path(args.cityscapes_dir)
+    if not cityscapes_dir.exists() and not cityscapes_dir.is_dir():
+        raise ValueError(f"{cityscapes_dir} does not exist")
+
+    if not Path(args.output_dir).exists():
+        Path(args.output_dir).mkdir(parents=True)
+    generate_positions(cityscapes_dir, args.num_positions, Path(args.output_dir))
 
 
 def generate_matlab(args):
@@ -51,12 +62,41 @@ def main():
         "matlab", help="Convert cityscape csv files to MATLAB format"
     )
 
+    # Drone
+    drone_parser = subprasers.add_parser(
+        "drone", help="Generate drone positions for cityscapes"
+    )
+
+    drone_parser.add_argument(
+        "--cityscapes_dir",
+        type=str,
+        default="data/cityscapes",
+        help="Directory containing cityscape csv files",
+    )
+
+    drone_parser.add_argument(
+        "--num_positions",
+        type=int,
+        default=10,
+        help="Number of drone positions to generate",
+    )
+
+    drone_parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="data/drone_positions",
+        help="Directory to save drone positions",
+    )
+
     args = parser.parse_args()
 
     if args.command == "cityscapes":
         generate_cityscapes(args)
     if args.command == "matlab":
         generate_matlab(args)
+
+    if args.command == "drone":
+        generate_drone_positions(args)
 
 
 if __name__ == "__main__":
