@@ -6,6 +6,7 @@ from typing import Callable, Dict, List, Tuple
 from .qtree import QTree, find_children, Point
 from .sampling import Tag, sample_poisson_disk
 from tqdm import tqdm
+import pandas as pd
 
 
 class CityScapeGenerator(object):
@@ -102,7 +103,8 @@ class CityScapeGenerator(object):
     def export(self, path):
         if not len(self.buildings):
             raise Exception("there are no buildings to export")
-        np.save(path, np.array(self.buildings))
+        df = pd.DataFrame(self.buildings)
+        df.to_csv(path, index=False)
 
 
 def plot_building(coords, ax):
@@ -175,4 +177,4 @@ def batch_export(path, n_exports=60, scale=100, name_prefix="sample"):
             scale=scale,
         )
         proc_gen.generate_sample()
-        proc_gen.export(f"{path}/{name_prefix}-{i}.npy")
+        proc_gen.export(f"{path}/{name_prefix}-{i}.csv")
