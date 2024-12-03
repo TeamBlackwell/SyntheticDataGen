@@ -18,6 +18,7 @@ def generate_cityscapes(args):
 def generate_matlab(args):
     print("To generate the MATLAB meshes please use MATLAB :(")
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate synthetic data for predicting local wind fields"
