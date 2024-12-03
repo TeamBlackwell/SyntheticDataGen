@@ -5,7 +5,7 @@ Contains the code for generating data required for the PredictingLocalWindFields
 Generates the following data:
 
 - 3D Wind flow field using Phiflow
-- 3D Urban Map using quadtrees for intersection
+- 3D Cityscape using quadtrees for intersection
 
 ### Usage
 
