@@ -178,4 +178,4 @@ def batch_export(path, n_exports=60, scale=100, name_prefix="sample"):
             scale=scale,
         )
         proc_gen.generate_sample()
-        proc_gen.export(f"{path}/{name_prefix}-{i}.csv")
+        proc_gen.export(f"{path}/{name_prefix}_{i}.csv")
