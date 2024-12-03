@@ -16,15 +16,7 @@ def generate_cityscapes(args):
 
 
 def generate_matlab(args):
-    cityscape_dir = Path(args.cityscape_dir)
-    output_dir = Path(args.output_dir)
-    if not cityscape_dir.exists():
-        raise FileNotFoundError(f"{cityscape_dir} does not exist")
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True)
-
-    process_csv_to_matlab(cityscape_dir, output_dir)
-
+    print("To generate the MATLAB meshes please use MATLAB :(")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -56,19 +48,6 @@ def main():
     # MATLAB
     matlab_parser = subprasers.add_parser(
         "matlab", help="Convert cityscape csv files to MATLAB format"
-    )
-    matlab_parser.add_argument(
-        "--cityscape_dir",
-        type=str,
-        default="data/cityscapes",
-        help="Directory containing cityscape csv files",
-    )
-
-    matlab_parser.add_argument(
-        "--output_dir",
-        type=str,
-        default="data/matlab",
-        help="Directory to save MATLAB files",
     )
 
     args = parser.parse_args()
