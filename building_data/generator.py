@@ -5,11 +5,12 @@ import numpy as np
 from typing import Callable, Dict, List, Tuple
 from .qtree import QTree, find_children, Point
 from .sampling import Tag, sample_poisson_disk
+from tqdm import tqdm
 
 
 class CityScapeGenerator(object):
     """
-    Main class for procedural generation
+    Main class for Cityscape generation
     """
 
     def __init__(
@@ -159,11 +160,12 @@ def get_bounds_of_house(
     return x1, y1, x2, y2
 
 
-def batch_export(path, *, n_exports=60, name_prefix="sample", scale=100):
+# @TODO: Accept density and n_buildings as arguments
+def batch_export(path, n_exports=60, scale=100, name_prefix="sample"):
     """
     path: the path to the directory where you need to export
     """
-    for i in range(n_exports):
+    for i in tqdm(range(n_exports)):
         proc_gen = CityScapeGenerator(
             2,
             sampling_fncs=[
