@@ -104,7 +104,7 @@ class CityScapeGenerator(object):
         if not len(self.buildings):
             raise Exception("there are no buildings to export")
         df = pd.DataFrame(self.buildings)
-        df.to_csv(path, index=False)
+        df.to_csv(path, index=False, header=False)
 
 
 def plot_building(coords, ax):
