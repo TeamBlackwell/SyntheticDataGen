@@ -36,6 +36,7 @@ The 3D LiDAR simulation is conducted using the MATLAB UAV toolbox. MATLAB requir
 
 ### Output File Structure
 
+```
 data/
 ├─ cityscapes/
 │  ├─ city_0.csv
@@ -65,6 +66,7 @@ data/
 │  │  ├─ pointcloud_1.csv
 │  │  ├─ pointcloud_(...).csv
 │  │  ├─ pointcloud_10.csv
+```
 
 
 ## MATLAB Toolbox requirements
