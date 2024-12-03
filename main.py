@@ -3,7 +3,7 @@ CLI for generating data
 """
 
 import argparse
-from building_data import batch_export, process_csv_to_matlab
+from cityscapes import batch_export
 from pathlib import Path
 
 
