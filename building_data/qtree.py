@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from typing import List
 
+
 class Point:
     def __init__(self, x: float, y: float, tag: int):
         self.x = x
