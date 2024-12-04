@@ -5,6 +5,7 @@ CLI for generating data
 import argparse
 from cityscapes import batch_export
 from drone import generate_positions
+from windflow import generate_windflow
 from pathlib import Path
 
 
@@ -24,6 +25,16 @@ def generate_drone_positions(args):
     if not Path(args.output_dir).exists():
         Path(args.output_dir).mkdir(parents=True)
     generate_positions(cityscapes_dir, args.num_positions, Path(args.output_dir))
+
+
+def create_windflows(args):
+    cityscapes_dir = Path(args.cityscapes_dir)
+    output_dir = Path(args.output_dir)
+    if not cityscapes_dir.exists() and not cityscapes_dir.is_dir():
+        raise ValueError(f"{cityscapes_dir} does not exist")
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True)
+    generate_windflow(cityscapes_dir, output_dir)
 
 
 def generate_matlab(args):
@@ -88,6 +99,23 @@ def main():
         help="Directory to save drone positions",
     )
 
+    # Windflow
+    windflow_parser = subprasers.add_parser("windflow", help="Generate windflow data")
+
+    windflow_parser.add_argument(
+        "--cityscapes_dir",
+        type=str,
+        default="data/cityscapes",
+        help="Directory containing cityscape csv files",
+    )
+
+    windflow_parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="data/windflow",
+        help="Directory to save windflow data",
+    )
+
     args = parser.parse_args()
 
     if args.command == "cityscapes":
@@ -97,6 +125,9 @@ def main():
 
     if args.command == "drone":
         generate_drone_positions(args)
+
+    if args.command == "windflow":
+        create_windflows(args)
 
 
 if __name__ == "__main__":
