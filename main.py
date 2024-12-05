@@ -14,7 +14,7 @@ def generate_cityscapes(args):
     if not path.exists():
         path.mkdir(parents=True)
 
-    batch_export(path, args.num_cities, args.map_size, args.prefix)
+    batch_export(path, n_exports=args.num_cities, sclae=args.map_size, name_prefix=args.prefix)
 
 
 def generate_drone_positions(args):
