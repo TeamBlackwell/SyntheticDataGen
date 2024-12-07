@@ -87,7 +87,7 @@ def windflow_visualization(cityscape_path: Path, windflow_path: Path, map_size: 
 
     mag_array = np.rot90(mag_array, 1)
     # plot the magnitude array
-    plt.imshow(mag_array, cmap='plasma', interpolation='nearest')
+    plt.imshow(mag_array, cmap='jet', interpolation='bicubic')
 
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
