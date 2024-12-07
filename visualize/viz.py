@@ -1,44 +1,27 @@
 """
-Visualise the cityscape data
+Visualize cityscape, drone lidar and generated windflow data
 """
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from .generator import CityScapeGenerator
-from .sampling import sample_poisson_disk, Tag
 from matplotlib.patches import Rectangle
+from pathlib import Path
 
 
-def main_cityscape_visualization(map_size=100, buildings=40, density=15):
+def cityscape_visualization(cityscape_path: Path, map_size: int):
     """
-    Visualize the cityscape with buildings and drone positions.
+    Visualize the cityscape with buildings
 
     Parameters
-    - map_size: Size of the cityscape grid
-    - buildings: Number of buildings to generate
-    - density: Density of building placement
-    """  # Create the cityscape generator
-    city_gen = CityScapeGenerator(
-        2,
-        sampling_fncs=[
-            (
-                sample_poisson_disk,
-                Tag.HOUSE,
-                {"density": density, "n_buildings": buildings},
-            ),
-        ],
-        map_size=map_size,
-        debug=False,
-    )
-
-    # Generate the sample cityscape
-    city_gen.generate_sample()
+    - cityscape_path: path to cityscape csv file.
+    - map_size: side length of the cityscape in meters.
+    """
 
     # Create the main plot
     plt.figure(figsize=(10, 10))
 
     # Plot buildings
-    buildings_df = pd.DataFrame(city_gen.buildings)
+    buildings_df = pd.read_csv(cityscape_path)
     buildings_df.columns = ["x1", "y1", "x2", "y2", "height"]
 
     # Plot each building as a rectangle
@@ -52,16 +35,6 @@ def main_cityscape_visualization(map_size=100, buildings=40, density=15):
                 edgecolor="gray",
                 linewidth=1,
             )
-        )
-
-    # Plot drone positions
-    if hasattr(city_gen, "robot_coords"):
-        plt.scatter(
-            city_gen.robot_coords["x_r"],
-            city_gen.robot_coords["y_r"],
-            color="red",
-            s=100,
-            label="Drone Positions",
         )
 
     # Plot building centers

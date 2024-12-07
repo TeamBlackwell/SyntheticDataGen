@@ -253,11 +253,11 @@ def get_bounds_of_house(point, node, factor=7, alpha=0.3, beta=0.7):
 
 def batch_export(
     path: Path,
-    name_prefix:str,
-    map_size:int,
-    n_cityscapes:int,
-    n_buildings:int,
-    building_density:int,
+    name_prefix: str,
+    map_size: int,
+    n_cityscapes: int,
+    n_buildings: int,
+    building_density: int,
 ):
     """
     path: export the generated cityscape to this directory.
