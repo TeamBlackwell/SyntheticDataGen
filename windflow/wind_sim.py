@@ -12,31 +12,11 @@ def _step(v, p, ob_list, bndry_mask, spd_x, spd_y):
     v = v * (1 - bndry_mask) + bndry_mask * (
         spd_x,
         spd_y,
-    )  # make sure you dont simulat OOB
+    )
 
-    v, p = flow.fluid.make_incompressible(
-        v, ob_list, flow.Solve("auto", 1e-5, x0=p)
-    )  # make it do the boundary thign
+    v, p = flow.fluid.make_incompressible(v, ob_list, flow.Solve("auto", 1e-5, x0=p))
 
     return v, p, ob_list, bndry_mask, spd_x, spd_y
-
-
-@flow.math.jit_compile
-def _step_3d(v, p, ob_list):
-
-    v = flow.advect.semi_lagrangian(v, v, 1.0)
-    # v = v * (1 - bndry_mask) + bndry_mask * (
-    #     speeds[0],
-    #     speeds[1],
-    #     speeds[2],
-    # )  # make sure you dont simulat OOB
-
-    # print("\n", v, "\n")
-    # print("\n", v, "\n")
-    v, p = flow.fluid.make_incompressible(
-        v, ob_list, flow.Solve("auto", 1e-5, x0=p)
-    )  # make it do the boundary thing
-    return v, p, ob_list
 
 
 def run_flow(
@@ -100,12 +80,6 @@ def run_flow(
         range=trange,
     )
 
-    # visualization
-    #anim = flow.plot( [p_data, *cuboid_list[::-1]], animate="time", size=(6, 6), frame_time=1, overlay="list",)
-    #plt.show()
-    _step.traces.clear()
-    _step.recorded_mappings.clear()
-
     v_numpy = v_data.numpy()
 
     x_data = v_numpy[0]  # (T, H + 1, W)
@@ -125,25 +99,9 @@ def run_flow(
     y_data = np.mean(y_data, axis=0)
 
     v_stacked = np.stack((x_data, y_data), axis=0)  # (2, H, W)
-    # change to (H, W, 2)
     v_stacked = np.moveaxis(v_stacked, 0, -1)
 
     if np.isnan(v_stacked).any():
         raise ValueError("NANs in the velocity data")
 
     return v_stacked
-
-
-def save_flow(flow_data: np.ndarray, path: Path | str) -> None:
-    """
-    Save the flow data, which is a np.ndarray of shape (map_size, map_size, 2) to the given path.
-
-    Saves any numpy array, of any shape. Saves to the given path. Path should end with .npy.
-    """
-    if isinstance(path, str):
-        path = Path(path)
-
-    if path.suffix == "npy":
-        raise ValueError("Path should end with .npy")
-
-    np.save(path, flow_data)
