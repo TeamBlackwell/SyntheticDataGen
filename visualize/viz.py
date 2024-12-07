@@ -3,12 +3,13 @@ Visualize cityscape, drone lidar and generated windflow data
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pathlib import Path
 
 
-def cityscape_visualization(cityscape_path: Path, map_size: int):
+def cityscape_visualization(cityscape_path: Path, map_size: int, fig_size = (5, 5)):
     """
     Visualize the cityscape with buildings
 
@@ -18,7 +19,7 @@ def cityscape_visualization(cityscape_path: Path, map_size: int):
     """
 
     # Create the main plot
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=fig_size)
 
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
@@ -62,3 +63,107 @@ def cityscape_visualization(cityscape_path: Path, map_size: int):
     # Show the plot
     plt.tight_layout()
     plt.show()
+
+def windflow_visualization(cityscape_path: Path, windflow_path: Path, map_size: int, fig_size = (5, 5)):
+    """
+    Visualize the cityscape with buildings and windflow data
+
+    Parameters
+    - cityscape_path: path to cityscape csv file.
+    - windflow_path: path to windflow csv file.
+    - map_size: side length of the cityscape in meters.
+    """
+
+    # Create the main plot
+
+    plt.figure(figsize=fig_size)
+
+    arr = np.load(windflow_path)
+
+    # above is the shape N, N, 2
+    # 2 represents X and Y speed
+    # calculate magnitude and get a N x N array
+    mag_array = np.linalg.norm(arr, axis=2)
+
+    mag_array = np.rot90(mag_array, 1)
+    # plot the magnitude array
+    plt.imshow(mag_array, cmap='jet', interpolation='bicubic')
+
+    # Plot buildings
+    buildings_df = pd.read_csv(cityscape_path)
+    buildings_df.columns = ["x1", "y1", "x2", "y2", "height"]
+
+    # Plot each building as a rectangle
+    for _, building in buildings_df.iterrows():
+        building["x1"], building["y1"] = building["y1"], building["x1"]
+        building["x2"], building["y2"] = building["y2"], building["x2"]
+
+        building["x1"], building["y1"] = building["y1"], 100 - building["x1"] - 6
+        building["x2"], building["y2"] = building["y2"], 100 - building["x2"] - 6
+
+
+        plt.gca().add_patch(
+            Rectangle(
+                (int(building["x1"]), int(building["y1"])),
+                abs(building["x2"] - building["x1"]),
+                abs(building["y2"] - building["y1"]),
+                fill=True,
+                facecolor="black",
+                edgecolor="gray",
+                linewidth=1,
+            )
+        )
+
+    # # Plot building centers
+    # building_centers_x = (buildings_df["x1"] + buildings_df["x2"]) / 2
+    # building_centers_y = (buildings_df["y1"] + buildings_df["y2"]) / 2
+    # plt.scatter(
+    #     building_centers_x,
+    #     building_centers_y,
+    #     color="blue",
+    #     alpha=0.5,
+    #     s=20,
+    #     label="Building Centers",
+    # )
+
+    # Set plot properties
+    plt.title("Windflow Visualization")
+    plt.xlabel("X Coordinate")
+    plt.ylabel("Y Coordinate")
+    plt.xlim(0, map_size)
+    plt.ylim(0, map_size)
+    # plt.grid(True, linestyle="--", alpha=0.7)
+    # add color bar and name the color bar
+    plt.colorbar()
+    plt.axis("equal")
+
+    # Show the plot
+    plt.tight_layout()
+    plt.show()
+    
+    # # Plot windflow data
+    # windflow_df = pd.read_csv(windflow_path)
+    # windflow_df.columns = ["x", "y", "u", "v"]
+
+    # # Plot windflow vectors
+    # for _, windflow in windflow_df.iterrows():
+    #     plt.quiver(
+    #         windflow["x"],
+    #         windflow["y"],
+    #         windflow["u"],
+    #         windflow["v"],
+    #         color="red",
+    #         alpha=0.5,
+    #         scale=50,
+    #         scale_units="xy",
+    #         angles="xy",
+    #     )
+
+    # # Set plot properties
+    # plt.title("Windflow Visualization")
+    # plt.xlabel("X Coordinate")
+    # plt.ylabel("Y Coordinate")
+    # plt.xlim(0, map_size)
+    # plt.ylim(0, map_size)
+    # plt.grid(True, linestyle="--", alpha=0.7)
+    # plt

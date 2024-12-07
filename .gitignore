@@ -1,3 +1,10 @@
 *.pyc
 data
 *.asv
+
+.DS_Store
+
+city_0_*.npy
+
+__pycache__/
+
