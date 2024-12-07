@@ -30,7 +30,7 @@ def generate_windflow(cityscapes_dir: Path, output_dir: Path):
         cityscape = cityscape.to_numpy()
         cityscape = cityscape[:, 0:4]
 
-        flow = run_flow(cityscape, 150, 1, 100, SPEED_X, SPEED_Y)
+        flow = run_flow(cityscape, 268, 1, 100, SPEED_X, SPEED_Y)
 
         output_path = output_dir / cityscape_file.name
         np.save(output_path.with_suffix(".npy"), flow)
