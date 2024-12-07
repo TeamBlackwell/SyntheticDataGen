@@ -1,6 +1,7 @@
 import numpy as np
-from phi.jax import flow
+from phi import flow
 from tqdm import trange
+
 
 @flow.math.jit_compile
 def _step_2d(v, p, ob_list):
@@ -14,7 +15,7 @@ def run_flow2d(
     pre_time: int,
     avg_time_window: int,
     map_size: int,
-    wind_speed: tuple[float,float],
+    wind_speed: tuple[float, float],
 ) -> np.ndarray:
     """
     Run a flow simulation with the given parameters. Mainly with the rectangles and the speed of winds.
@@ -30,12 +31,10 @@ def run_flow2d(
 
     # for each cuboid, make a box
     rect_list = []
-    for rect in rect_data:
+    for rect in rect_data[:4]:
         x1, y1, x2, y2 = rect
-        rect_list.append(
-            flow.Box(flow.vec(x=x1, y=y1), flow.vec(x=x2, y=y2))
-        )
-        break
+        # print(x1, y1, x2, y2)
+        rect_list.append(flow.Box(flow.vec(x=x1, y=y1), flow.vec(x=x2, y=y2)))
 
     # make all of them obstacles
     obstacle_list = []
@@ -54,7 +53,6 @@ def run_flow2d(
     )
 
     pressure = None
-
     v_data = flow.iterate(
         _step_2d,
         flow.batch(time=(pre_time + avg_time_window)),
@@ -63,7 +61,10 @@ def run_flow2d(
         obstacle_list,
         range=trange,
     )
-    quit()
+    print(v_data)
+
+    
+
     v_numpy = v_data.numpy()
 
     x_data = v_numpy[0]  # (T, H + 1, W, D)
