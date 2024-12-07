@@ -63,8 +63,6 @@ def run_flow2d(
     )
     print(v_data)
 
-    
-
     v_numpy = v_data.numpy()
 
     x_data = v_numpy[0]  # (T, H + 1, W, D)
