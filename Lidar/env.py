@@ -6,7 +6,7 @@ class buildEnvironment:
     def __init__(self, MapDimensions):
         pygame.init()
         self.pointCloud = []
-        self.externalMap = pygame.image.load("map.jpg")
+        self.externalMap = pygame.image.load("test.png")
         self.maph, self.mapw = MapDimensions
         self.MapWindowName = "2d Lidar simulation"
 
@@ -37,4 +37,4 @@ class buildEnvironment:
         self.infomap = self.map.copy()
         for point in self.pointCloud:
             self.infomap.set_at((int(point[0]), int(point[1])), (0, 255, 0))
-            pygame.draw.circle(self.infomap, self.Green, point, 1)
+            pygame.draw.circle(self.infomap, self.Green, point, 3)
