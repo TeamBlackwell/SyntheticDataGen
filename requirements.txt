@@ -4,3 +4,4 @@ scipy
 argparse
 tqdm
 pandas
+pygame
