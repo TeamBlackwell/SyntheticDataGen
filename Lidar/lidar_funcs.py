@@ -38,7 +38,7 @@ class Lidar:
             x2, y2 = x1 + self.Range * math.cos(angle), y1 - self.Range * math.sin(
                 angle
             )
-            added = 0
+            added = False
             for i in range(0, 100):
                 u = i / 100
                 x = int(x2 * u + x1 * (1 - u))
@@ -49,17 +49,20 @@ class Lidar:
                         distance = self.distance((x, y))
                         output = uncertainty_add(distance, angle, self.sigma)
                         lidar_data.append(distance)
-                        added = 1
                         output.append(self.position)
                         data.append(output)
                         break
-            if added == 0:
-                lidar_data.append(np.nan)
-        # plot lidar_data x axis is angle, y axis is distance
-        import matplotlib.pyplot as plt
-
-        lidar_data = np.nan_to_num(lidar_data, nan=np.nanmax(lidar_data))
-        lidar_data /= np.nanmax(lidar_data)
+                    if i == 99:
+                        distance = self.Range
+                        output = uncertainty_add(distance, angle, self.sigma)
+                        lidar_data.append(distance)
+                        output.append(self.position)
+                        data.append(output)
+                    added = True
+            if not added:
+                distance = self.Range
+                lidar_data.append(distance)
+        lidar_data = np.array(lidar_data) / self.Range
         # angles = np.linspace(-180, 180, 360, False)
         # plt.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
         # plt.plot(angles, lidar_data, color="r")
@@ -68,11 +71,12 @@ class Lidar:
         # plt.ylabel("D/D_max")
         # plt.title("Model Input")
         # plt.show()
-        
+
         if len(data) > 0:
             return data
         else:
             return False
+
 
 def run_lidar_only(range_, uncertainty, binary_map_mask, position):
 
@@ -90,12 +94,10 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
     lidar_data = []
     x1, y1 = position[0], position[1]
 
-    print(x1,y1)
+    print(x1, y1)
 
     for angle in np.linspace(-math.pi, math.pi, 360, False):
-        x2, y2 = x1 + range_ * math.cos(angle), y1 - range_ * math.sin(
-            angle
-        )
+        x2, y2 = x1 + range_ * math.cos(angle), y1 - range_ * math.sin(angle)
         added = 0
         for i in range(0, 100):
             u = i / 100
@@ -117,10 +119,11 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
 
     lidar_data = np.nan_to_num(lidar_data, nan=np.nanmax(lidar_data))
     lidar_data /= np.nanmax(lidar_data)
-    
+
     print(lidar_data.shape)
 
     return lidar_data
+
 
 def binarize_citymap_image(rgb_image):
     # black is obstacle, any other color is free space
@@ -131,11 +134,12 @@ def binarize_citymap_image(rgb_image):
 
             if np.all(rgb_image[i, j] == [0, 0, 0]):
                 binary_map[i, j] = 1
-    
+
     return binary_map
-    
+
+
 def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
-    
+
     for city in citymaps_dir.glob("*.png"):
         # open image as np array, without pygame
         city_map = Image.open(city)
@@ -154,9 +158,13 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
             # scale to 800x800 map by multiplying above by 800/100
             position = (position[0] * 8, position[1] * 8)
 
-            lidar_output = run_lidar_only(200, uncertainty=(0.5, 0.01), binary_map_mask=binary_map, position=position)
-            
+            lidar_output = run_lidar_only(
+                200,
+                uncertainty=(0.5, 0.01),
+                binary_map_mask=binary_map,
+                position=position,
+            )
+
             break
-        
-        
+
         break
