@@ -2,6 +2,7 @@
 Visualize cityscape, drone lidar and generated windflow data
 """
 
+from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -64,7 +65,7 @@ def cityscape_visualization(cityscape_path: Path, map_size: int, fig_size = (5, 
     plt.tight_layout()
     plt.show()
 
-def windflow_visualization(cityscape_path: Path, windflow_path: Path, map_size: int, fig_size = (5, 5)):
+def windflow_visualization(cityscape_path: Path, windflow_path: Path, map_size: int, fig_size = (5, 5), export = None):
     """
     Visualize the cityscape with buildings and windflow data
 
@@ -86,8 +87,29 @@ def windflow_visualization(cityscape_path: Path, windflow_path: Path, map_size: 
     mag_array = np.linalg.norm(arr, axis=2)
 
     mag_array = np.rot90(mag_array, 1)
+
+    def make_pastel_colormap(base_cmap_name, blend_factor=0.5):
+        """
+        Create a pastel version of a given base colormap by blending it with white.
+        
+        Parameters:
+            base_cmap_name (str): Name of the base colormap (e.g., 'jet').
+            blend_factor (float): Blending factor with white (0 = no change, 1 = fully white).
+        
+        Returns:
+            LinearSegmentedColormap: A pastel colormap.
+        """
+        base_cmap = plt.cm.get_cmap(base_cmap_name)
+        colors = base_cmap(np.linspace(0, 1, 256))
+        white = np.array([1, 1, 1, 1])  # RGBA for white
+        pastel_colors = (1 - blend_factor) * colors + blend_factor * white
+        pastel_cmap = LinearSegmentedColormap.from_list(f"{base_cmap_name}_pastel", pastel_colors)
+        return pastel_cmap
+
+    # Create a pastel version of the 'jet' colormap
+    pastel_jet = make_pastel_colormap('jet', blend_factor=0.5)
     # plot the magnitude array
-    plt.imshow(mag_array, cmap='jet', interpolation='bicubic')
+    plt.imshow(mag_array, cmap=pastel_jet, interpolation='bicubic')
 
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
@@ -108,8 +130,7 @@ def windflow_visualization(cityscape_path: Path, windflow_path: Path, map_size: 
                 abs(building["x2"] - building["x1"]),
                 abs(building["y2"] - building["y1"]),
                 fill=True,
-                facecolor="black",
-                edgecolor="gray",
+                color="black",
                 linewidth=1,
             )
         )
@@ -134,12 +155,23 @@ def windflow_visualization(cityscape_path: Path, windflow_path: Path, map_size: 
     plt.ylim(0, map_size)
     # plt.grid(True, linestyle="--", alpha=0.7)
     # add color bar and name the color bar
-    plt.colorbar()
     plt.axis("equal")
 
     # Show the plot
     plt.tight_layout()
-    plt.show()
+
+    if export:
+        # remove axes, ticks and labels
+        plt.axis('off')
+        plt.xticks([])
+        plt.yticks([])
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+        # make it 800x800
+        plt.gcf().set_size_inches(8, 8)
+        plt.savefig(export)
+    else:
+        plt.colorbar()
+        plt.show()
     
     # # Plot windflow data
     # windflow_df = pd.read_csv(windflow_path)

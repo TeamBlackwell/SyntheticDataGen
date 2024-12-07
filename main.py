@@ -62,16 +62,31 @@ def visualise_cityscape(args):
     cityscape_visualization(cityscape_path, args.map_size, args.fig_size)
 
 def visualize_windflow(args):
-    windflow_path = Path(args.data_dir / "windflow" / f"city_{args.index}.npy")
-    cityscape_path = Path(args.data_dir / "cityscapes" / f"city_{args.index}.csv")
-    if not windflow_path.exists():
-        raise ValueError(f"{windflow_path} does not exist")
-    if not cityscape_path.exists():
-        raise ValueError(f"{cityscape_path} does not exist")
+
+    if not args.export_all:
+        windflow_path = Path(args.data_dir / "windflow" / f"city_{args.index}.npy")
+        cityscape_path = Path(args.data_dir / "cityscapes" / f"city_{args.index}.csv")
+
+        if not windflow_path.exists():
+            raise ValueError(f"{windflow_path} does not exist")
+        if not cityscape_path.exists():
+            raise ValueError(f"{cityscape_path} does not exist")
     
     args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
 
-    windflow_visualization(cityscape_path, windflow_path, args.map_size, args.fig_size)
+    if args.export_all:
+        print(f"Ignoring value of index and exporting all windflow data in {args.data_dir / 'windflow'} to {args.export_dir}")
+        args.export_dir = Path(args.export_dir)
+        if not args.export_dir.exists():
+            args.export_dir.mkdir(parents=True)
+        
+        for i in (args.data_dir / "windflow").glob("*.npy"):
+            cityscape_path = args.data_dir / "cityscapes" / f"{i.stem}.csv"
+            if not cityscape_path.exists():
+                continue
+            windflow_visualization(cityscape_path, i, args.map_size, args.fig_size, args.export_dir / f"{i.stem}.png")
+    else:
+        windflow_visualization(cityscape_path, windflow_path, args.map_size, args.fig_size, args.export)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -188,6 +203,15 @@ def main():
     )
     vizsubwind.add_argument(
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
+    )
+    vizsubwind.add_argument(
+        "--export", type=str, default=None, help="Export the figure"
+    )
+    vizsubwind.add_argument(
+        "--export-all", default=False, help="Export all figures", action="store_true"
+    )
+    vizsubwind.add_argument(
+        "--export-dir", type=Path, default="data/exportviz", help="Export directory"
     )
 
     args = parser.parse_args()
