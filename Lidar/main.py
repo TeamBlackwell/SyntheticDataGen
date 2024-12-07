@@ -1,3 +1,4 @@
+import numpy as np
 import env
 import lidar
 import pygame
@@ -36,6 +37,7 @@ while running:
         sensor_data = laser.sense_obstacles()
         environment.dataStorage(sensor_data)
         environment.show_sensordata()
+
     environment.map.blit(environment.infomap, (0, 0))
     pygame.display.update()
 

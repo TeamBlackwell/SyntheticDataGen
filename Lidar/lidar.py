@@ -70,3 +70,38 @@ class Lidar:
             return data
         else:
             return False
+
+    def sense_and_return(self):
+        data = []
+        lidar_data = []
+        x1, y1 = self.position[0], self.position[1]
+        for angle in np.linspace(-math.pi, math.pi, 360, False):
+            x2, y2 = x1 + self.Range * math.cos(angle), y1 - self.Range * math.sin(
+                angle
+            )
+            added = 0
+            for i in range(0, 100):
+                u = i / 100
+                x = int(x2 * u + x1 * (1 - u))
+                y = int(y2 * u + y1 * (1 - u))
+                if 0 < x < self.W and 0 < y < self.H:
+                    color = self.map.get_at((x, y))
+                    if color[0] < 150 and color[1] < 150 and color[2] < 150:
+                        distance = self.distance((x, y))
+                        output = uncertainty_add(distance, angle, self.sigma)
+                        lidar_data.append(distance)
+                        added = 1
+                        output.append(self.position)
+                        data.append(output)
+                        break
+            if added == 0:
+                lidar_data.append(np.nan)
+
+        lidar_data = np.nan_to_num(lidar_data, nan=np.nanmax(lidar_data))
+        lidar_data /= np.nanmax(lidar_data)
+        
+        print(lidar_data.shape)
+
+
+def gen_iterative_lidar(cityscapes_dir, positions_dir, output_dir):
+    pass
