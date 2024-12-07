@@ -4,6 +4,7 @@ import pygame
 import math
 import numpy as np
 from PIL import Image
+from tqdm import tqdm
 
 
 def uncertainty_add(distance, angle, sigma):
@@ -96,7 +97,8 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
     lidar_data = []
     x1, y1 = position[0], position[1]
 
-    for angle in np.linspace(-math.pi, math.pi, 360, False):
+
+    for angle in np.linspace(0, 2 * math.pi, 360, False):
         x2, y2 = x1 + range_ * math.cos(angle), y1 - range_ * math.sin(angle)
         added = False
         for i in range(0, 100):
@@ -120,7 +122,7 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
                     lidar_data.append(distance)
                     output.append(position)
                     data.append(output)
-                added = True
+                    added = True
         if not added:
             distance = range_
             lidar_data.append(distance) 
@@ -145,7 +147,7 @@ def binarize_citymap_image(rgb_image):
 
 def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
 
-    for city in citymaps_dir.glob("*.png"):
+    for city in tqdm(citymaps_dir.glob("*.png")):
         # open image as np array, without pygame
         city_map = Image.open(city)
         # remove alpha
@@ -170,7 +172,4 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
                 position=position,
             )
 
-            print(lidar_output.shape)
-            break
-
-        break
+            np.save(output_dir / f"{city.stem}_pos{i}.npy", lidar_output)
