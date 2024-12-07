@@ -35,7 +35,7 @@ class Lidar:
             x2, y2 = x1 + self.Range * math.cos(angle), y1 - self.Range * math.sin(
                 angle
             )
-            added = 0
+            added = False
             for i in range(0, 100):
                 u = i / 100
                 x = int(x2 * u + x1 * (1 - u))
@@ -46,17 +46,23 @@ class Lidar:
                         distance = self.distance((x, y))
                         output = uncertainty_add(distance, angle, self.sigma)
                         lidar_data.append(distance)
-                        added = 1
                         output.append(self.position)
                         data.append(output)
                         break
-            if added == 0:
-                lidar_data.append(np.nan)
+                    if i == 99:
+                        distance = self.Range
+                        output = uncertainty_add(distance, angle, self.sigma)
+                        lidar_data.append(distance)
+                        output.append(self.position)
+                        data.append(output)
+                    added = True
+            if not added:
+                distance = self.Range
+                lidar_data.append(distance)
         # plot lidar_data x axis is angle, y axis is distance
         import matplotlib.pyplot as plt
 
-        lidar_data = np.nan_to_num(lidar_data, nan=np.nanmax(lidar_data))
-        lidar_data /= np.nanmax(lidar_data)
+        lidar_data = np.array(lidar_data) / self.Range
         # angles = np.linspace(-180, 180, 360, False)
         # plt.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
         # plt.plot(angles, lidar_data, color="r")
@@ -65,7 +71,7 @@ class Lidar:
         # plt.ylabel("D/D_max")
         # plt.title("Model Input")
         # plt.show()
-        
+
         if len(data) > 0:
             return data
         else:

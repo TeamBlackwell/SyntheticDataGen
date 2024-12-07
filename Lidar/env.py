@@ -5,7 +5,7 @@ import pygame
 class buildEnvironment:
     def __init__(self, MapDimensions):
         pygame.init()
-        self.pointCloud = []
+        # self.pointCloud = []
         self.externalMap = pygame.image.load("test.png")
         self.maph, self.mapw = MapDimensions
         self.MapWindowName = "2d Lidar simulation"
@@ -27,14 +27,22 @@ class buildEnvironment:
         return (int(x), int(y))
 
     def dataStorage(self, data):
+        self.map.blit(self.externalMap, (0, 0))
+        pointCloud = []
         if data != False:
             for element in data:
                 point = self.AD2pos(element[0], element[1], element[2])
-                if point not in self.pointCloud:
-                    self.pointCloud.append(point)
+                if point not in pointCloud:
+                    pointCloud.append(point)
+        self.infomap = self.map.copy()
+        for point in pointCloud:
+            self.infomap.set_at((int(point[0]), int(point[1])), (0, 255, 0))
+            pygame.draw.circle(self.infomap, self.Red, point, 3)
 
     def show_sensordata(self):
-        self.infomap = self.map.copy()
-        for point in self.pointCloud:
-            self.infomap.set_at((int(point[0]), int(point[1])), (0, 255, 0))
-            pygame.draw.circle(self.infomap, self.Green, point, 3)
+        pass
+
+    #     self.infomap = self.map.copy()
+    #     for point in self.pointCloud:
+    #         self.infomap.set_at((int(point[0]), int(point[1])), (0, 255, 0))
+    #         pygame.draw.circle(self.infomap, self.Green, point, 3)
