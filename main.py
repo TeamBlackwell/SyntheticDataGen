@@ -15,7 +15,12 @@ def generate_cityscapes(args):
         path.mkdir(parents=True)
 
     batch_export(
-        path, n_exports=args.num_cities, scale=args.map_size, name_prefix=args.prefix
+        path,
+        args.prefix,
+        args.map_size,
+        args.n_cityscapes,
+        args.n_buildings,
+        args.building_density
     )
 
 
@@ -39,7 +44,7 @@ def create_windflows(args):
     generate_windflow(cityscapes_dir, output_dir)
 
 
-def generate_matlab(args):
+def generate_matlab():
     print("To generate the MATLAB meshes please use MATLAB :(")
 
 
@@ -53,12 +58,20 @@ def main():
     cityscapes_parser = subprasers.add_parser(
         "cityscapes", help="Generate cityscape csv files"
     )
-
     cityscapes_parser.add_argument(
-        "--num_cities", type=int, default=60, help="Number of cityscapes to generate"
+        "--prefix", type=str, default="city", help="Prefix for the output files"
     )
     cityscapes_parser.add_argument(
-        "--map_size", type=int, default=250, help="Size of the map"
+        "--n_cityscapes", type=int, default=60, help="Number of cityscapes to generate"
+    )
+    cityscapes_parser.add_argument(
+        "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    cityscapes_parser.add_argument(
+        "--n_buildings", type=int, default=32, help="Number of buildings to generate per cityscape"
+    )
+    cityscapes_parser.add_argument(
+        "--building_density", type=int, default=8, help="Controls the clustering of buildings within a cityscape"
     )
     cityscapes_parser.add_argument(
         "--output_dir",
@@ -66,12 +79,9 @@ def main():
         default="data/cityscapes",
         help="Directory to save buildings",
     )
-    cityscapes_parser.add_argument(
-        "--prefix", type=str, default="city", help="Prefix for the output files"
-    )
 
     # MATLAB
-    matlab_parser = subprasers.add_parser(
+    _ = subprasers.add_parser(
         "matlab", help="Convert cityscape csv files to MATLAB format"
     )
 
@@ -123,13 +133,15 @@ def main():
     if args.command == "cityscapes":
         generate_cityscapes(args)
     if args.command == "matlab":
-        generate_matlab(args)
+        generate_matlab()
 
     if args.command == "drone":
         generate_drone_positions(args)
 
     if args.command == "windflow":
         create_windflows(args)
+    if not args.command:
+        parser.print_help()
 
 
 if __name__ == "__main__":
