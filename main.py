@@ -6,6 +6,7 @@ import argparse
 from cityscapes import batch_export
 from drone import generate_positions
 from windflow import generate_windflow
+from lidar import gen_iterative_lidar
 from visualize import cityscape_visualization, windflow_visualization
 from pathlib import Path
 
@@ -52,19 +53,19 @@ def generate_matlab():
     print("To generate the MATLAB meshes please use MATLAB :(")
 
 def generate_lidar_data(args):
-    cityscapes_dir = Path(args.cityscapes_dir)
+    citymaps_dir = Path(args.citymaps_dir)
     positions_dir = Path(args.positions_dir)
     output_dir = Path(args.output_dir)
 
-    if not cityscapes_dir.exists() or not cityscapes_dir.is_dir():
-        raise ValueError(f"{cityscapes_dir} does not exist")
+    if not citymaps_dir.exists() or not citymaps_dir.is_dir():
+        raise ValueError(f"{citymaps_dir} does not exist")
     if not positions_dir.exists() or not positions_dir.is_dir():
         raise ValueError(f"{positions_dir} does not exist")
     
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
     
-    gen_iterative_lidar(cityscapes_dir, positions_dir, output_dir)
+    gen_iterative_lidar(citymaps_dir, positions_dir, output_dir)
 
 def visualise_cityscape(args):
     cityscape_path = Path(args.filename)
@@ -195,9 +196,9 @@ def main():
     lidar_parser = gensub.add_parser("lidar", help="Generate lidar data")
 
     lidar_parser.add_argument(
-        "--cityscapes_dir",
+        "--citymaps_dir",
         type=str,
-        default="data/cityscapes",
+        default="data/exportviz",
         help="Directory containing cityscape csv files",
     )
     lidar_parser.add_argument(

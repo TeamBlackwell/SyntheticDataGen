@@ -1,6 +1,6 @@
 import numpy as np
 import env
-import lidar
+import lidar_funcs as lidar
 import pygame
 import math
 
