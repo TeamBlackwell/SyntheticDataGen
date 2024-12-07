@@ -6,7 +6,7 @@ import math
 
 environment = env.buildEnvironment((800, 800))
 environment.originalMap = environment.map.copy()
-laser = lidar.Lidar(200, environment.originalMap, uncertainty=(0.5, 0.01))
+laser = lidar.Lidar(150, environment.originalMap, uncertainty=(0.5, 0.01))
 # environment.map.fill((0, 0, 0))
 environment.infomap = environment.map.copy()
 pygame.init()
@@ -23,22 +23,20 @@ while running:
             running = False
         # elif not pygame.mouse.get_focused():
         # sensorON = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # if pygame.mouse.get_focused():
-            # if input_rect.collidepoint(event.pos):
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        if pygame.mouse.get_focused():
             sensorON = True
         else:
             sensorON = False
 
     if sensorON:
         position = pygame.mouse.get_pos()
-        # position = (200, 200)
         laser.position = position
-        pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
         sensor_data = laser.sense_obstacles()
         environment.dataStorage(sensor_data)
         environment.show_sensordata()
-
+        pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
+    
     environment.map.blit(environment.infomap, (0, 0))
     pygame.display.update()
 
