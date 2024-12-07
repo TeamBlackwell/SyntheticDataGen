@@ -61,8 +61,7 @@ class CityScapeGenerator(object):
             self.debug_ax[0][0].legend(["Skyscrapers", "Houses"])
         self.populate_with_buildings()
         self.robot_coords = self.find_robot_coordinates(
-            buildings=self.buildings, 
-            center=self.center
+            buildings=self.buildings, center=self.center
         )
 
         if show:
@@ -79,7 +78,7 @@ class CityScapeGenerator(object):
             sample_plot.set_title("[DEBUG] Sampling Function")
             sample_plot.axis("equal")
         return X, Y
-    
+
     def find_robot_coordinates(
         self,
         buildings: List[np.ndarray],
@@ -90,9 +89,9 @@ class CityScapeGenerator(object):
         z_height: float = 15.0,
     ) -> pd.DataFrame:
         """
-        Generate robot coordinates that avoid building locations and ensure 
+        Generate robot coordinates that avoid building locations and ensure
         minimum distance between robots.
-        
+
         Parameters:
         - buildings: List of building coordinates [x1, y1, x2, y2, height]
         - center: Center point of the circular area
@@ -100,10 +99,11 @@ class CityScapeGenerator(object):
         - n_robots: Number of robots to place
         - radius: Radius of the circular area
         - z_height: Height of robots
-        
+
         Returns:
         pandas.DataFrame with robot coordinates
         """
+
         def is_valid_point(point: np.ndarray, placed_points: List[np.ndarray]) -> bool:
             """
             Check if a point is valid (not too close to buildings or other robots)
@@ -113,15 +113,17 @@ class CityScapeGenerator(object):
                 # Building bounds
                 x1, y1, x2, y2, _ = building
                 # Check if point is inside or too close to building
-                if (x1 - min_distance <= point[0] <= x2 + min_distance and
-                    y1 - min_distance <= point[1] <= y2 + min_distance):
+                if (
+                    x1 - min_distance <= point[0] <= x2 + min_distance
+                    and y1 - min_distance <= point[1] <= y2 + min_distance
+                ):
                     return False
-            
+
             # Check distance from other placed points
             for placed in placed_points:
                 if np.linalg.norm(point[:2] - placed[:2]) < min_distance:
                     return False
-            
+
             return True
 
         # Prepare list to store robot coordinates
@@ -135,25 +137,29 @@ class CityScapeGenerator(object):
         while len(robot_coords) < n_robots:
             # Generate a random point within the circular area
             angle = np.random.uniform(0, 2 * np.pi)
-            r = np.sqrt(np.random.uniform(0, 1)) * radius  # Uniform distribution within circle
+            r = (
+                np.sqrt(np.random.uniform(0, 1)) * radius
+            )  # Uniform distribution within circle
             x = x_center + r * np.cos(angle)
             y = y_center + r * np.sin(angle)
-            
+
             candidate_point = np.array([x, y, z_height])
-            
+
             # Check if point is valid
             if is_valid_point(candidate_point, robot_coords):
                 robot_coords.append(candidate_point)
                 attempts = 0  # Reset attempts after successful placement
             else:
                 attempts += 1
-            
+
             # Prevent infinite loop
             if attempts > max_attempts:
-                raise ValueError(f"Could not place {n_robots} robots after {max_attempts * n_robots} attempts")
-        
+                raise ValueError(
+                    f"Could not place {n_robots} robots after {max_attempts * n_robots} attempts"
+                )
+
         # Convert to DataFrame
-        df = pd.DataFrame(robot_coords, columns=['x_r', 'y_r', 'z_r'])
+        df = pd.DataFrame(robot_coords, columns=["x_r", "y_r", "z_r"])
         return df
 
     def add_samples_to_qtree(self, X, Y, tag):
@@ -228,19 +234,15 @@ def make_house_buildings(node, *, debug):
             node.y0 + node.height * np.random.random(),
             3,
         )
-        x1, y1, x2, y2 = get_bounds_of_house(
-            point, node, alpha=0.3
-        )
+        x1, y1, x2, y2 = get_bounds_of_house(point, node, alpha=0.3)
         height = 25
         ans.append(np.array([x1, y1, x2, y2, height]))
     return ans
 
 
-def get_bounds_of_house(
-    point, node, factor=7, alpha=0.3, beta=0.7
-):
+def get_bounds_of_house(point, node, factor=7, alpha=0.3, beta=0.7):
     bounded_random = lambda: np.random.random() * alpha + beta
-    height = bounded_random()*factor
+    height = bounded_random() * factor
     width = bounded_random() * factor
     x1 = max(point.x - width / 2, node.x0)
     y1 = max(point.y - height / 2, node.y0)
@@ -250,7 +252,9 @@ def get_bounds_of_house(
     return x1, y1, x2, y2
 
 
-def batch_export(path, *, n_exports=60, scale=100, name_prefix="sample", buildings=32, density=8):
+def batch_export(
+    path, *, n_exports=60, scale=100, name_prefix="sample", buildings=32, density=8
+):
     """
     path: the path to the directory where you need to export
     """
@@ -258,21 +262,27 @@ def batch_export(path, *, n_exports=60, scale=100, name_prefix="sample", buildin
         proc_gen = CityScapeGenerator(
             2,
             sampling_fncs=[
-                (sample_poisson_disk, Tag.HOUSE, {"density": density, "n_buildings": buildings}),
+                (
+                    sample_poisson_disk,
+                    Tag.HOUSE,
+                    {"density": density, "n_buildings": buildings},
+                ),
             ],
             scale=scale,
         )
         proc_gen.generate_sample()
         proc_gen.export(f"{path}/{name_prefix}_{i}")
 
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+
 def main_cityscape_visualization(scale=100, buildings=40, density=15):
     """
     Visualize the cityscape with buildings and drone positions.
-    
+
     Parameters5
     - scale: Size of the cityscape grid
     - buildings: Number of buildings to generate
@@ -282,81 +292,86 @@ def main_cityscape_visualization(scale=100, buildings=40, density=15):
     city_gen = CityScapeGenerator(
         2,
         sampling_fncs=[
-            (sample_poisson_disk, Tag.HOUSE, {"density": density, "n_buildings": buildings}),
+            (
+                sample_poisson_disk,
+                Tag.HOUSE,
+                {"density": density, "n_buildings": buildings},
+            ),
         ],
         scale=scale,
-        debug=False
+        debug=False,
     )
-    
+
     # Generate the sample cityscape
     city_gen.generate_sample()
-    
+
     # Create the main plot
     plt.figure(figsize=(10, 10))
-    
+
     # Plot buildings
     buildings_df = pd.DataFrame(city_gen.buildings)
     buildings_df.columns = ["x1", "y1", "x2", "y2", "height"]
-    
+
     # Plot each building as a rectangle
     for _, building in buildings_df.iterrows():
         plt.gca().add_patch(
             plt.Rectangle(
-                (building['x1'], building['y1']),
-                building['x2'] - building['x1'],
-                building['y2'] - building['y1'],
+                (building["x1"], building["y1"]),
+                building["x2"] - building["x1"],
+                building["y2"] - building["y1"],
                 fill=False,
-                edgecolor='gray',
-                linewidth=1
+                edgecolor="gray",
+                linewidth=1,
             )
         )
-    
+
     # Plot drone positions
-    if hasattr(city_gen, 'robot_coords'):
+    if hasattr(city_gen, "robot_coords"):
         plt.scatter(
-            city_gen.robot_coords['x_r'], 
-            city_gen.robot_coords['y_r'], 
-            color='red', 
-            s=100, 
-            label='Drone Positions'
+            city_gen.robot_coords["x_r"],
+            city_gen.robot_coords["y_r"],
+            color="red",
+            s=100,
+            label="Drone Positions",
         )
-        
+
         # Annotate drone positions
         for i, row in city_gen.robot_coords.iterrows():
             plt.annotate(
-                f'Drone {i+1}\n(z={row["z_r"]})', 
-                (row['x_r'], row['y_r']), 
+                f'Drone {i+1}\n(z={row["z_r"]})',
+                (row["x_r"], row["y_r"]),
                 xytext=(10, 10),
-                textcoords='offset points',
-                color='red',
-                fontweight='bold'
+                textcoords="offset points",
+                color="red",
+                fontweight="bold",
             )
-    
+
     # Plot building centers
-    building_centers_x = (buildings_df['x1'] + buildings_df['x2']) / 2
-    building_centers_y = (buildings_df['y1'] + buildings_df['y2']) / 2
+    building_centers_x = (buildings_df["x1"] + buildings_df["x2"]) / 2
+    building_centers_y = (buildings_df["y1"] + buildings_df["y2"]) / 2
     plt.scatter(
-        building_centers_x, 
-        building_centers_y, 
-        color='blue', 
-        alpha=0.5, 
-        s=20, 
-        label='Building Centers'
+        building_centers_x,
+        building_centers_y,
+        color="blue",
+        alpha=0.5,
+        s=20,
+        label="Building Centers",
     )
-    
+
     # Set plot properties
-    plt.title('Cityscape Visualization')
-    plt.xlabel('X Coordinate')
-    plt.ylabel('Y Coordinate')
+    plt.title("Cityscape Visualization")
+    plt.xlabel("X Coordinate")
+    plt.ylabel("Y Coordinate")
     plt.xlim(0, scale)
     plt.ylim(0, scale)
-    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.grid(True, linestyle="--", alpha=0.7)
     plt.legend()
-    plt.axis('equal')
-    
+    plt.axis("equal")
+
     # Show the plot
     plt.tight_layout()
     plt.show()
+
 
 # Example usage
 if __name__ == "__main__":
