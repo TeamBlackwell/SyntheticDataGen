@@ -51,7 +51,7 @@ class Lidar:
                         data.append(output)
                         break
             if added == 0:
-                lidar_data.append(np.NaN)
+                lidar_data.append(np.nan)
         # plot lidar_data x axis is angle, y axis is distance
         import matplotlib.pyplot as plt
 
