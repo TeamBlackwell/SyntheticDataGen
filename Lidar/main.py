@@ -35,9 +35,9 @@ while running:
         sensor_data = laser.sense_obstacles()
         environment.dataStorage(sensor_data)
         environment.show_sensordata()
-        pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
-    
     environment.map.blit(environment.infomap, (0, 0))
+    if sensorON:
+        pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
     pygame.display.update()
 
 pygame.quit()
