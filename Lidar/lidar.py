@@ -4,9 +4,9 @@ import numpy as np
 
 
 def uncertainty_add(distance, angle, sigma):
-    mean = np.array([distance, angle])
-    covariance = np.diag(sigma**2)
-    distance, angle = np.random.multivariate_normal(mean, covariance)
+    # mean = np.array([distance, angle])
+    # covariance = np.diag(sigma**2)
+    # distance, angle = np.random.multivariate_normal(mean, covariance)
     distance = max(0, distance)
     angle = max(0, angle)
     return [distance, angle]
@@ -31,7 +31,7 @@ class Lidar:
         data = []
         lidar_data = []
         x1, y1 = self.position[0], self.position[1]
-        for angle in np.linspace(-math.pi, math.pi, 360, False):
+        for angle in np.linspace(0, 2 * math.pi, 360, False):
             x2, y2 = x1 + self.Range * math.cos(angle), y1 - self.Range * math.sin(
                 angle
             )
@@ -42,7 +42,7 @@ class Lidar:
                 y = int(y2 * u + y1 * (1 - u))
                 if 0 < x < self.W and 0 < y < self.H:
                     color = self.map.get_at((x, y))
-                    if color[0] < 150 and color[1] < 150 and color[2] < 150:
+                    if color[0] < 10 and color[1] < 10 and color[2] < 10:
                         distance = self.distance((x, y))
                         output = uncertainty_add(distance, angle, self.sigma)
                         lidar_data.append(distance)
@@ -57,15 +57,15 @@ class Lidar:
 
         lidar_data = np.nan_to_num(lidar_data, nan=np.nanmax(lidar_data))
         lidar_data /= np.nanmax(lidar_data)
-        angles = np.linspace(-180, 180, 360, False)
-        plt.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
-        plt.plot(angles, lidar_data, color="r")
-        plt.ylim(0, 1.5)
-        plt.xlabel("Angle (deg)")
-        plt.ylabel("D/D_max")
-        plt.title("Model Input")
-        plt.show()
-
+        # angles = np.linspace(-180, 180, 360, False)
+        # plt.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
+        # plt.plot(angles, lidar_data, color="r")
+        # plt.ylim(0, 1.5)
+        # plt.xlabel("Angle (deg)")
+        # plt.ylabel("D/D_max")
+        # plt.title("Model Input")
+        # plt.show()
+        
         if len(data) > 0:
             return data
         else:
