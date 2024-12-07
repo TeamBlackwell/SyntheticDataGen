@@ -95,8 +95,8 @@ def run_flow(
     x_data = x_data[pre_time:, :, :]
     y_data = y_data[pre_time:, :, :]
 
-    x_data = np.mean(x_data, axis=0)
-    y_data = np.mean(y_data, axis=0)
+    # x_data = np.mean(x_data, axis=0)
+    # y_data = np.mean(y_data, axis=0)
 
     v_stacked = np.stack((x_data, y_data), axis=0)  # (2, H, W)
     v_stacked = np.moveaxis(v_stacked, 0, -1)

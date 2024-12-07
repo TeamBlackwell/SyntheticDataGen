@@ -9,6 +9,9 @@ from windflow import generate_windflow
 from visualize import cityscape_visualization, windflow_visualization
 from pathlib import Path
 
+import warnings
+warnings.filterwarnings("ignore")
+
 
 def generate_cityscapes(args):
     path = Path(args.output_dir)

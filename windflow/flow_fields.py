@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
+from tqdm import tqdm
+
 # from .wind_sim_two_d import run_flow2d
 # from .phiflow_runner import run_flow
 from .wind_sim import run_flow
@@ -21,15 +23,14 @@ def generate_windflow(cityscapes_dir: Path, output_dir: Path):
 
     cityscape_files = [f for f in cityscapes_dir.iterdir() if f.suffix == ".csv"]
 
-    for cityscape_file in cityscape_files:
+    for cityscape_file in tqdm(cityscape_files, desc="Cityscape"):
         cityscape = pd.read_csv(cityscape_file)
 
         # convert to numpy array
         cityscape = cityscape.to_numpy()
         cityscape = cityscape[:, 0:4]
 
-        flow = run_flow(cityscape, 200, 100, 100, SPEED_X, SPEED_Y)
+        flow = run_flow(cityscape, 150, 1, 100, SPEED_X, SPEED_Y)
 
         output_path = output_dir / cityscape_file.name
         np.save(output_path.with_suffix(".npy"), flow)
-        break
