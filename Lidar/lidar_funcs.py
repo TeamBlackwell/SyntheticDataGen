@@ -96,11 +96,9 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
     lidar_data = []
     x1, y1 = position[0], position[1]
 
-    print(x1, y1)
-
     for angle in np.linspace(-math.pi, math.pi, 360, False):
         x2, y2 = x1 + range_ * math.cos(angle), y1 - range_ * math.sin(angle)
-        added = 0
+        added = False
         for i in range(0, 100):
             u = i / 100
             x = int(x2 * u + x1 * (1 - u))
@@ -116,13 +114,18 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
                     output.append(position)
                     data.append(output)
                     break
-        if added == 0:
-            lidar_data.append(np.nan)
+                if i == 99:
+                    distance = range_
+                    output = uncertainty_add(distance, angle, sigma)
+                    lidar_data.append(distance)
+                    output.append(position)
+                    data.append(output)
+                added = True
+        if not added:
+            distance = range_
+            lidar_data.append(distance) 
 
-    lidar_data = np.nan_to_num(lidar_data, nan=np.nanmax(lidar_data))
-    lidar_data /= np.nanmax(lidar_data)
-
-    print(lidar_data.shape)
+    lidar_data = np.array(lidar_data) / range_
 
     return lidar_data
 
@@ -167,6 +170,7 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
                 position=position,
             )
 
+            print(lidar_output.shape)
             break
 
         break
