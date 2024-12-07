@@ -2,10 +2,11 @@ import matplotlib.pyplot as plt
 import numpy.typing as npt
 import numpy as np
 from typing import Callable, Dict, List, Tuple
-from qtree import QTree, find_children, Point
-from sampling import Tag, sample_poisson_disk
+from .qtree import QTree, find_children, Point
+from .sampling import Tag, sample_poisson_disk
 from tqdm import tqdm
 import pandas as pd
+from pathlib import Path
 
 
 class CityScapeGenerator(object):
@@ -251,19 +252,29 @@ def get_bounds_of_house(point, node, factor=7, alpha=0.3, beta=0.7):
 
 
 def batch_export(
-    path, *, n_exports=60, map_size=100, name_prefix="sample", buildings=32, density=8
+    path: Path,
+    name_prefix="city",
+    map_size=100,
+    n_cityscapes=60,
+    n_buildings=32,
+    building_density=8,
 ):
     """
-    path: the path to the directory where you need to export
+    path: export the generated cityscape to this directory.
+    name_prefix: prepend prefix onto cityscape file name. Eg `{name_prefix}_1.csv`.
+    map_size: side length of the city in metres.
+    n_cityscapes: number of cityscapes to be generated.
+    n_buildings: number of buildings in each cityscape.
+    building_density: controls the clustering of the buildings in the cityscape.
     """
-    for i in tqdm(range(n_exports)):
+    for i in tqdm(range(n_cityscapes)):
         proc_gen = CityScapeGenerator(
             2,
             sampling_fncs=[
                 (
                     sample_poisson_disk,
                     Tag.HOUSE,
-                    {"density": density, "n_buildings": buildings},
+                    {"density": building_density, "n_buildings": n_buildings},
                 ),
             ],
             map_size=map_size,
