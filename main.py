@@ -6,7 +6,7 @@ import argparse
 from cityscapes import batch_export
 from drone import generate_positions
 from windflow import generate_windflow
-from visualize import cityscape_visualization
+from visualize import cityscape_visualization, windflow_visualization
 from pathlib import Path
 
 
@@ -50,11 +50,25 @@ def generate_matlab():
 
 
 def visualise_cityscape(args):
-    cityscape_path = Path(args.cityscape)
+    cityscape_path = Path(args.filename)
     if not cityscape_path.exists():
         raise ValueError(f"{cityscape_path} does not exist")
-    cityscape_visualization(cityscape_path, args.map_size)
+    
+    args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
 
+    cityscape_visualization(cityscape_path, args.map_size, args.fig_size)
+
+def visualize_windflow(args):
+    windflow_path = Path(args.data_dir / "windflow" / f"city_{args.index}.npy")
+    cityscape_path = Path(args.data_dir / "cityscapes" / f"city_{args.index}.csv")
+    if not windflow_path.exists():
+        raise ValueError(f"{windflow_path} does not exist")
+    if not cityscape_path.exists():
+        raise ValueError(f"{cityscape_path} does not exist")
+    
+    args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
+
+    windflow_visualization(cityscape_path, windflow_path, args.map_size, args.fig_size)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -143,14 +157,34 @@ def main():
     )
 
     # Visualisation parser
-    viz_parser = subprasers.add_parser("visualize", help="Visualize the cityscape")
-    viz_parser.add_argument(
-        "--cityscape",
+    viz_parser = subprasers.add_parser("visualize", aliases=["viz"], help="Visualize the anything")
+    vizsub = viz_parser.add_subparsers(dest="visualize")
+    vizsubcity = vizsub.add_parser("cityscape", aliases=["city"], help="Visualize the cityscape only")
+    vizsubcity.add_argument(
+        "--filename",
         type=str,
-        help="Directory containing cityscape csv files",
+        help="File of the cityscape csv",
     )
-    viz_parser.add_argument(
+    vizsubcity.add_argument(
         "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    vizsubcity.add_argument(
+        "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
+    )
+
+    vizsubwind = vizsub.add_parser("windflow", aliases=["wind"], help="Visualize the windflow data")
+    vizsubwind.add_argument("--data_dir", type=Path, help="Directory containing windflow data", default="data")
+    vizsubwind.add_argument(
+        "--index",
+        type=int,
+        help="Index of the windflow data to visualize",
+        required=True
+    )
+    vizsubwind.add_argument(
+        "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    vizsubwind.add_argument(
+        "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
     )
 
     args = parser.parse_args()
@@ -165,8 +199,11 @@ def main():
 
     if args.command == "windflow":
         create_windflows(args)
-    if args.command == "visualize":
-        visualise_cityscape(args)
+    if args.command == "visualize" or args.command == "viz":
+        if args.visualize == "cityscape" or args.visualize == "city":
+            visualise_cityscape(args)
+        elif args.visualize == "windflow" or args.visualize == "wind":
+            visualize_windflow(args)
     if not args.command:
         parser.print_help()
 
