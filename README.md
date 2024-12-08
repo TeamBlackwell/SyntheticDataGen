@@ -98,6 +98,14 @@ data/
 │  ├─ city_1.mat
 │  ├─ city_(...).mat
 │  ├─ city_60.mat
+├─ lidar/
+│  ├─ city_0_pos0.npy
+│  ├─ city_0_pos1.npy
+│  ├─ city_0_pos(...).npy
+│  ├─ city_1_pos0.npy
+│  ├─ city_1_pos1.npy
+│  ├─ city_1_pos(...).npy
+│  ├─ city_(...)_pos(...).npy
 ├─ windflow/
 │  ├─ city_0.npy
 │  ├─ city_1.npy
