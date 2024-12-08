@@ -146,7 +146,7 @@ def binarize_citymap_image(rgb_image):
 
 def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
 
-    for city in tqdm(citymaps_dir.glob("*.png")):
+    for city in tqdm(list(citymaps_dir.glob("*.png"))):
         # open image as np array, without pygame
         city_map = Image.open(city)
         # remove alpha
@@ -160,7 +160,7 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
         positions = pd.read_csv(corresponding_positions)
 
         for i in range(len(positions)):
-            position = (positions.iloc[i]["x"], positions.iloc[i]["y"])
+            position = (positions.iloc[i]["xr"], positions.iloc[i]["yr"])
             # scale to 800x800 map by multiplying above by 800/100
             position = (position[0] * 8, position[1] * 8)
 
