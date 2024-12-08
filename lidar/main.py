@@ -8,6 +8,7 @@ from . import lidar_funcs as lidar
 import utils
 from PIL import Image
 
+
 def draw_arrow(surface, color, start, end, width=5, head_length=15, head_width=10):
     """
     Draws an arrow on the Pygame surface.
@@ -44,15 +45,20 @@ def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
     plt.axis("off")
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
-
     buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=100)
+    plt.savefig(buf, format="png", dpi=100)
     buf.seek(0)
-    pl = Image.open(buf).resize((prediction.shape[0] * 8, prediction.shape[1] * 8)).convert("RGB")
-    prediction_img = pygame.image.frombuffer(pl.tobytes(), (prediction.shape[0] * 8, prediction.shape[1] * 8), "RGB")
+    pl = (
+        Image.open(buf)
+        .resize((prediction.shape[0] * 8, prediction.shape[1] * 8))
+        .convert("RGB")
+    )
+    prediction_img = pygame.image.frombuffer(
+        pl.tobytes(), (prediction.shape[0] * 8, prediction.shape[1] * 8), "RGB"
+    )
 
     prediction_img.set_alpha(alpha * 255)
-    
+
     surface.blit(
         prediction_img,
         (
@@ -106,12 +112,15 @@ def run_with_index(data_dir, index, debug=False):
             # V = windflow[:, :, 1]
             # ax.quiver(X, Y, U, V)
             # plt.show()
-            data_coords = ((laser.position[0] // 8) + 200, (laser.position[1] // 8) + 200)
+            data_coords = (
+                (laser.position[0] // 8) + 200,
+                (laser.position[1] // 8) + 200,
+            )
 
             wind_robot = windflow[data_coords[0]][data_coords[1]]
             if debug:
                 print(f"Laser: {laser.position} | Data: {data_coords}")
-            
+
             magnitude = math.sqrt(wind_robot[0] ** 2 + wind_robot[1] ** 2)
             magnitude = math.log1p(magnitude) * 25  # log scaling
             magnitude = math.floor(magnitude)
@@ -139,7 +148,6 @@ def run_with_index(data_dir, index, debug=False):
             if debug:
                 print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
 
-
             draw_arrow(
                 environment.map,
                 (0, 0, 0),
@@ -151,7 +159,9 @@ def run_with_index(data_dir, index, debug=False):
             )
             # run model to get the prediction of the particular index and particular position of the robot
             prediction = np.random.rand(21, 21, 2)  # 21x21 grid
-            draw_prediction(environment.map, prediction, laser.position, cmap=cmap, alpha=0.5)
+            draw_prediction(
+                environment.map, prediction, laser.position, cmap=cmap, alpha=0.5
+            )
 
             imgtrans = pygame.image.load(
                 f"data/transparent/city_{index}_transparent.png"

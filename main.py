@@ -130,7 +130,7 @@ def add_generate_commands(genparser):
         default="data/winds.csv",
         help="Path to the winds.csv file",
     )
-    
+
     # pre_time
     windflow_parser.add_argument(
         "--pre_time",
@@ -283,8 +283,9 @@ def add_demo_commands(demo_parser):
         required=True,
         help="Index of the data to visualize",
     )
-    
+
     return demo_parser
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -302,10 +303,8 @@ def main():
         "visualize", aliases=["viz"], help="Visualize the anything"
     )
     viz_parser = add_vizualiser_commands(viz_parser)
-    
-    demo_parser = subprasers.add_parser(
-        "demo", help="Run the demo"
-    )
+
+    demo_parser = subprasers.add_parser("demo", help="Run the demo")
     demo_parser = add_demo_commands(demo_parser)
 
     args = parser.parse_args()
@@ -341,10 +340,10 @@ def main():
 
         if not args.visualize:
             viz_parser.print_help()
-        
+
     elif args.command == "demo":
         h.run_demo(args)
-        
+
     if not args.command:
         parser.print_help()
 

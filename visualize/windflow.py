@@ -10,6 +10,7 @@ from pathlib import Path
 
 from utils import make_pastel_colormap
 
+
 def windflow_visualization(
     cityscape_path: Path,
     windflow_path: Path,
@@ -48,7 +49,13 @@ def windflow_visualization(
     if not transparent:
         plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic", aspect="equal")
     else:
-        plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic", aspect="equal", alpha=0.0)
+        plt.imshow(
+            mag_array,
+            cmap=pastel_jet,
+            interpolation="bicubic",
+            aspect="equal",
+            alpha=0.0,
+        )
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
     buildings_df.columns = ["x1", "y1", "x2", "y2", "height"]
@@ -72,8 +79,7 @@ def windflow_visualization(
             )
         )
 
-
-    #@TODO: add a quiver arrow showing wind direction, from the bottom left (0, 0).
+    # @TODO: add a quiver arrow showing wind direction, from the bottom left (0, 0).
     # it should be a red arrow, the text should say "speed: x, y" of the wind
 
     # Plot windflow vectors
@@ -101,9 +107,15 @@ def windflow_visualization(
     plt.title("Windflow Visualization")
     plt.xlabel("X Coordinate")
     plt.ylabel("Y Coordinate")
-    plt.xlim((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
-    print((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
-    plt.ylim((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
+    plt.xlim(
+        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    )
+    print(
+        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    )
+    plt.ylim(
+        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    )
     # plt.grid(True, linestyle="--", alpha=0.7)
     # add color bar and name the color bar
     # plt.axis("equal")

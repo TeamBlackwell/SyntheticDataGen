@@ -94,18 +94,29 @@ def find_robot_coordinates(
     return df
 
 
-def generate_robot_coordinates(robot_dir, buildings_file, n_positions, min_distance, center_radius):
+def generate_robot_coordinates(
+    robot_dir, buildings_file, n_positions, min_distance, center_radius
+):
     df = pd.read_csv(buildings_file)
-    robot_df = find_robot_coordinates(df.to_numpy(), n_robots=n_positions, min_distance=min_distance, radius=center_radius)
+    robot_df = find_robot_coordinates(
+        df.to_numpy(),
+        n_robots=n_positions,
+        min_distance=min_distance,
+        radius=center_radius,
+    )
     basename = os.path.basename(buildings_file)
     robot_df.to_csv(
         os.path.join(robot_dir, f"{basename.split('.csv')[0]}.csv"), index=False
     )
 
 
-def batch_export_robot(robot_dir, data_directory, n_positions, min_distance, center_radius):
+def batch_export_robot(
+    robot_dir, data_directory, n_positions, min_distance, center_radius
+):
     for filename in tqdm(glob(os.path.join(data_directory, "*"))):
-        generate_robot_coordinates(robot_dir, filename, n_positions, min_distance, center_radius)
+        generate_robot_coordinates(
+            robot_dir, filename, n_positions, min_distance, center_radius
+        )
 
 
 if __name__ == "__main__":

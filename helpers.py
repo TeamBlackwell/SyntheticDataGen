@@ -39,7 +39,13 @@ def generate_drone_positions(args):
     if not Path(args.output_dir).exists():
         Path(args.output_dir).mkdir(parents=True)
 
-    batch_export_robot(args.output_dir, cityscapes_dir, args.num_positions, args.min_distance, args.radius)
+    batch_export_robot(
+        args.output_dir,
+        cityscapes_dir,
+        args.num_positions,
+        args.min_distance,
+        args.radius,
+    )
 
 
 def create_windflows(args):
@@ -57,10 +63,18 @@ def create_windflows(args):
 
     if len(args.speed_x) != len(args.speed_y):
         raise ValueError("speed_x and speed_y must be of the same length")
-    
+
     speed_candidate_list = [(x, y) for x, y in zip(args.speed_x, args.speed_y)]
 
-    batch_generate_windflow(cityscapes_dir, output_dir, winds_csv, speed_candidate_list=speed_candidate_list, pre_time=args.pre_time, post_time=args.post_time, map_size=args.map_size)
+    batch_generate_windflow(
+        cityscapes_dir,
+        output_dir,
+        winds_csv,
+        speed_candidate_list=speed_candidate_list,
+        pre_time=args.pre_time,
+        post_time=args.post_time,
+        map_size=args.map_size,
+    )
 
 
 def generate_matlab():
@@ -90,7 +104,9 @@ def visualise_cityscape(args):
 
     args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
 
-    cityscape_visualization(cityscape_path, args.map_size, args.world_size, args.fig_size)
+    cityscape_visualization(
+        cityscape_path, args.map_size, args.world_size, args.fig_size
+    )
 
 
 def visualize_windflow(args):
@@ -136,8 +152,10 @@ def visualize_windflow(args):
 
         if args.export_dir == args.data_dir / "exportviz":
             raise ValueError("Cannot export to exportviz directory")
-    
-        for i in tqdm(list((args.data_dir / "windflow").glob("*.npy")), desc="Processing"):
+
+        for i in tqdm(
+            list((args.data_dir / "windflow").glob("*.npy")), desc="Processing"
+        ):
             cityscape_path = args.data_dir / "cityscapes" / f"{i.stem}.csv"
             if not cityscape_path.exists():
                 continue
@@ -152,7 +170,14 @@ def visualize_windflow(args):
             )
     else:
         windflow_visualization(
-            cityscape_path, windflow_path, args.map_size, args.world_size, args.fig_size, args.export, args.plot_vector, args.export_transparent
+            cityscape_path,
+            windflow_path,
+            args.map_size,
+            args.world_size,
+            args.fig_size,
+            args.export,
+            args.plot_vector,
+            args.export_transparent,
         )
 
 
@@ -168,10 +193,11 @@ def visuaize_drone(args):
 
     drone_visualization(map_path, drone_path, args.map_size, args.fig_size)
 
+
 def run_demo(args):
 
     data_dir = Path(args.data_dir)
     if not data_dir.exists() or not data_dir.is_dir():
         raise ValueError(f"{data_dir} does not exist")
-    
+
     run_with_index(Path(args.data_dir), args.index)
