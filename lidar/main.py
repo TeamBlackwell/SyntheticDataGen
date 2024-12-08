@@ -10,6 +10,9 @@ from PIL import Image
 from matplotlib.gridspec import GridSpec
 import os
 
+fig2, ax2 = plt.subplots()
+fig2.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
 
 def draw_arrow(surface, color, start, end, width=5, head_length=15, head_width=10):
     """
@@ -68,12 +71,13 @@ def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
 
 
 def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
-    fig2, ax2 = plt.subplots()
-
-    fig2.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    pygame.init()
+    screen_info = pygame.display.Info()
+    x = screen_info.current_w - screen_size - 10
+    y = 50
+    os.environ["SDL_VIDEO_WINDOW_POS"] = "%d,%d" % (x, y)
 
     previous_position = (0, 0)
-
     cityimage_path = data_dir / "exportviz" / f"city_{index}.png"
     windflow_path = data_dir / "windflow" / f"city_{index}.npy"
 
@@ -81,18 +85,21 @@ def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
     environment.originalMap = environment.map.copy()
     laser = lidar.Lidar(200, environment.originalMap, uncertainty=(0.5, 0.01))
     environment.infomap = environment.map.copy()
-    pygame.init()
     running = True
 
     cmap = utils.make_pastel_colormap("jet", blend_factor=0.5)
     lidar_data = []
 
     plt.ion()
-    fig = plt.figure(figsize=(10, 15))  # Overall figure size
+    fig = plt.figure(figsize=(8, 8))  # Overall figure size
     gs = GridSpec(2, 2, height_ratios=[2, 1])
-    ax1 = fig.add_subplot(gs[0, :])
-    ax2 = fig.add_subplot(gs[1, 0])
-    ax3 = fig.add_subplot(gs[1, 1])
+    fig_ax1 = fig.add_subplot(gs[0, :])
+    fig_ax2 = fig.add_subplot(gs[1, 0])
+    fig_ax3 = fig.add_subplot(gs[1, 1])
+
+    # Move the plot window to the left
+    mng = plt.get_current_fig_manager()
+    mng.window.wm_geometry("+0+10")
     while running:
         sensorON = False
 
@@ -117,29 +124,28 @@ def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
             windflow = np.load(str(windflow_path))
 
             # plotting the lidar data
-            ax1.cla()
+            fig_ax1.cla()
             angles = np.linspace(-180, 180, 360, False)
-            ax1.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
-            ax1.plot(angles, lidar_data, color="r")
-            # change the limit only for this plot
-            ax1.set_ylim(0, 1.5)
-            ax1.set_xlabel("Angle (deg)")
-            ax1.set_ylabel("D/D_max")
-            ax1.set_title("Model Input")
-            # ax2.set_xlabel("Angle (deg)")
-            # ax2.set_ylabel("D/D_max")
-            ax2.set_title("Velocity Error (m/s)")
-            # ax3.set_xlabel("Angle (deg)")
-            # ax3.set_ylabel("D/D_max")
-            ax3.set_title("Direction Error (deg)")
+            fig_ax1.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
+            fig_ax1.plot(angles, lidar_data, color="r")
+            fig_ax1.set_ylim(0, 1.5)
+            fig_ax1.set_xlabel("Angle (deg)")
+            fig_ax1.set_ylabel("D/D_max")
+            fig_ax1.set_title("Model Input")
+            # fig_ax2.set_xlabel("Angle (deg)")
+            # fig_ax2.set_ylabel("D/D_max")
+            fig_ax2.set_title("Velocity Error (m/s)")
+            # fig_ax3.set_xlabel("Angle (deg)")
+            # fig_ax3.set_ylabel("D/D_max")
+            fig_ax3.set_title("Direction Error (deg)")
             prediction = np.random.rand(21, 21, 2)
             prediction = np.linalg.norm(prediction, axis=2)
-            ax2.imshow(prediction, cmap=cmap, interpolation="bicubic")
-            ax3.imshow(prediction, cmap=cmap, interpolation="bicubic")
-            cbar_ax2 = fig.add_axes([0.87, 0.08, 0.02, 0.26])
-            cbar_ax3 = fig.add_axes([0.44, 0.08, 0.02, 0.26])
-            fig.colorbar(ax2.images[0], cax=cbar_ax2)
-            fig.colorbar(ax3.images[0], cax=cbar_ax3)
+            fig_ax2.imshow(prediction, cmap=cmap, interpolation="bicubic")
+            fig_ax3.imshow(prediction, cmap=cmap, interpolation="bicubic")
+            cbar_fig_ax2 = fig.add_axes([0.87, 0.08, 0.02, 0.26])
+            cbar_fig_ax3 = fig.add_axes([0.44, 0.08, 0.02, 0.26])
+            fig.colorbar(fig_ax2.images[0], cax=cbar_fig_ax2)
+            fig.colorbar(fig_ax3.images[0], cax=cbar_fig_ax3)
             fig.canvas.draw()
             fig.canvas.flush_events()
             plt.pause(0.005)
