@@ -57,8 +57,8 @@ def windflow_visualization(
         building["x1"], building["y1"] = building["y1"], building["x1"]
         building["x2"], building["y2"] = building["y2"], building["x2"]
 
-        building["x1"], building["y1"] = building["y1"], 100 - building["x1"] - 6
-        building["x2"], building["y2"] = building["y2"], 100 - building["x2"] - 6
+        building["x1"], building["y1"] = building["y1"], 500 - building["x1"] - 6
+        building["x2"], building["y2"] = building["y2"], 500 - building["x2"] - 6
 
         plt.gca().add_patch(
             Rectangle(
@@ -78,8 +78,8 @@ def windflow_visualization(
     # Plot windflow vectors
 
     if plot_vector:
-        for i in range(0, arr.shape[0], 3):
-            for j in range(0, arr.shape[1], 3):
+        for i in range(0, arr.shape[0], 10):
+            for j in range(0, arr.shape[1], 10):
                 # the scale should be the magnitude of the vector
                 mag = np.linalg.norm(arr[i, j])
                 # scale mag to be between 0 and 150

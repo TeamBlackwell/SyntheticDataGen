@@ -34,16 +34,16 @@ def cityscape_visualization(cityscape_path: Path, map_size: int, fig_size=(5, 5)
         )
 
     # Plot building centers
-    building_centers_x = (buildings_df["x1"] + buildings_df["x2"]) / 2
-    building_centers_y = (buildings_df["y1"] + buildings_df["y2"]) / 2
-    plt.scatter(
-        building_centers_x,
-        building_centers_y,
-        color="blue",
-        alpha=0.5,
-        s=20,
-        label="Building Centers",
-    )
+    # building_centers_x = (buildings_df["x1"] + buildings_df["x2"]) / 2
+    # building_centers_y = (buildings_df["y1"] + buildings_df["y2"]) / 2
+    # plt.scatter(
+    #     building_centers_x,
+    #     building_centers_y,
+    #     color="blue",
+    #     alpha=0.5,
+    #     s=20,
+    #     label="Building Centers",
+    # )
 
     # Set plot properties
     plt.title("Cityscape Visualization")
@@ -52,8 +52,6 @@ def cityscape_visualization(cityscape_path: Path, map_size: int, fig_size=(5, 5)
     plt.xlim(0, map_size)
     plt.ylim(0, map_size)
     plt.grid(True, linestyle="--", alpha=0.7)
-    plt.legend()
-    plt.axis("equal")
 
     # Show the plot
     plt.tight_layout()
