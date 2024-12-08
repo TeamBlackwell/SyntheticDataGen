@@ -116,7 +116,9 @@ class CityScapeGenerator(object):
         # the map_size is 100x100. But world size is 500x500.
         # the mapped buildings should be placed at the center of the world.
         # center of world is 250, 250. So we add 250 to the x and y coordinates.
-        self.buildings[:, :4] += (self.world_size / 2)
+        # but we place the buildings at the center of the map. So we subtract 50 from the x and y coordinates.
+        # this is the same as adding 200 to the x and y coordinates.
+        self.buildings[:, :4] += ((self.world_size / 2) - (self.map_size / 2))
 
         df = pd.DataFrame(self.buildings)
         df.columns = ["x1", "y1", "x2", "y2", "height"]
