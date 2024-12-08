@@ -2,13 +2,13 @@
 Visualize cityscape, drone lidar and generated windflow data
 """
 
-from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pathlib import Path
 
+from utils import make_pastel_colormap
 
 def windflow_visualization(
     cityscape_path: Path,
@@ -38,26 +38,6 @@ def windflow_visualization(
     mag_array = np.linalg.norm(arr, axis=2)
 
     mag_array = np.rot90(mag_array, 1)
-
-    def make_pastel_colormap(base_cmap_name, blend_factor=0.5):
-        """
-        Create a pastel version of a given base colormap by blending it with white.
-
-        Parameters:
-            base_cmap_name (str): Name of the base colormap (e.g., 'jet').
-            blend_factor (float): Blending factor with white (0 = no change, 1 = fully white).
-
-        Returns:
-            LinearSegmentedColormap: A pastel colormap.
-        """
-        base_cmap = plt.cm.get_cmap(base_cmap_name)
-        colors = base_cmap(np.linspace(0, 1, 256))
-        white = np.array([1, 1, 1, 1])  # RGBA for white
-        pastel_colors = (1 - blend_factor) * colors + blend_factor * white
-        pastel_cmap = LinearSegmentedColormap.from_list(
-            f"{base_cmap_name}_pastel", pastel_colors
-        )
-        return pastel_cmap
 
     # Create a pastel version of the 'jet' colormap
     pastel_jet = make_pastel_colormap("jet", blend_factor=0.5)

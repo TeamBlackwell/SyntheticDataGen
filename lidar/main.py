@@ -1,32 +1,12 @@
-from pathlib import Path
+import io
 import numpy as np
 import pygame
 import math
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
-import seaborn as sns
-
-
-def make_pastel_colormap(base_cmap_name, blend_factor=0.5):
-    """
-    Create a pastel version of a given base colormap by blending it with white.
-
-    Parameters:
-        base_cmap_name (str): Name of the base colormap (e.g., 'jet').
-        blend_factor (float): Blending factor with white (0 = no change, 1 = fully white).
-
-    Returns:
-        LinearSegmentedColormap: A pastel colormap.
-    """
-    base_cmap = plt.cm.get_cmap(base_cmap_name)
-    colors = base_cmap(np.linspace(0, 1, 256))
-    white = np.array([1, 1, 1, 1])  # RGBA for white
-    pastel_colors = (1 - blend_factor) * colors + blend_factor * white
-    pastel_cmap = LinearSegmentedColormap.from_list(
-        f"{base_cmap_name}_pastel", pastel_colors
-    )
-    return pastel_cmap
-
+from . import env
+from . import lidar_funcs as lidar
+import utils
+from PIL import Image
 
 def draw_arrow(surface, color, start, end, width=5, head_length=15, head_width=10):
     """
@@ -56,18 +36,23 @@ def draw_arrow(surface, color, start, end, width=5, head_length=15, head_width=1
     pygame.draw.polygon(surface, color, [end, head_end1, head_end2])
 
 
-def draw_prediction(surface, prediction, drone_pos, alpha=0.5):
-    plt.figure(figsize=(5, 5))
-    pastel_jet = make_pastel_colormap("jet", blend_factor=0.5)
+def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
     prediction = np.linalg.norm(prediction, axis=2)
-    sns.heatmap(prediction, cmap=pastel_jet, cbar=False)
+
+    plt.figure(figsize=(1, 1))
+    plt.imshow(prediction, cmap=cmap, interpolation="bicubic")
     plt.axis("off")
-    plt.savefig("prediction.png", bbox_inches="tight", pad_inches=0)
-    prediction_img = pygame.image.load("prediction.png")
-    prediction_img = pygame.transform.scale(
-        prediction_img, (prediction.shape[0] * 8, prediction.shape[1] * 8)
-    )
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png', dpi=100)
+    buf.seek(0)
+    pl = Image.open(buf).resize((prediction.shape[0] * 8, prediction.shape[1] * 8)).convert("RGB")
+    prediction_img = pygame.image.frombuffer(pl.tobytes(), (prediction.shape[0] * 8, prediction.shape[1] * 8), "RGB")
+
     prediction_img.set_alpha(alpha * 255)
+    
     surface.blit(
         prediction_img,
         (
@@ -79,8 +64,6 @@ def draw_prediction(surface, prediction, drone_pos, alpha=0.5):
 
 def run_with_index(data_dir, index,debug=False):
     previous_position = (0, 0)
-    from . import env
-    from . import lidar_funcs as lidar
 
     cityimage_path = data_dir / "exportviz" / f"city_{index}.png"
     windflow_path = data_dir / "windflow" / f"city_{index}.npy"
@@ -91,6 +74,8 @@ def run_with_index(data_dir, index,debug=False):
     environment.infomap = environment.map.copy()
     pygame.init()
     running = True
+
+    cmap = utils.make_pastel_colormap("jet", blend_factor=0.5)
 
     while running:
         sensorON = False
@@ -157,7 +142,7 @@ def run_with_index(data_dir, index,debug=False):
             )
             # run model to get the prediction of the particular index and particular position of the robot
             prediction = np.random.rand(21, 21, 2)  # 21x21 grid
-            draw_prediction(environment.map, prediction, laser.position, alpha=0.5)
+            draw_prediction(environment.map, prediction, laser.position, cmap=cmap, alpha=0.5)
 
             imgtrans = pygame.image.load(
                 f"data/transparent/city_{index}_transparent.png"
