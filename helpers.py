@@ -19,7 +19,7 @@ def generate_cityscapes(args):
 
     batch_export(
         path,
-        args.prefix,
+        args.cont,
         args.map_size,
         args.n_cityscapes,
         args.n_buildings,

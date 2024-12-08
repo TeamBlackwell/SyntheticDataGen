@@ -27,6 +27,9 @@ def add_generate_commands(genparser):
         "--n_cityscapes", type=int, default=60, help="Number of cityscapes to generate"
     )
     cityscapes_parser.add_argument(
+        "--continue", dest="cont", action="store_true", help="Continue from last"
+    )
+    cityscapes_parser.add_argument(
         "--map_size", type=int, default=100, help="Side length of map in metres"
     )
     cityscapes_parser.add_argument(
