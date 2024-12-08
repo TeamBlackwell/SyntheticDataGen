@@ -4,10 +4,10 @@ CLI for generating data
 
 import argparse
 from cityscapes import batch_export
-from drone import generate_positions
+from drone import batch_export_robot
 from windflow import generate_windflow
 from lidar import gen_iterative_lidar
-from visualize import cityscape_visualization, windflow_visualization
+from visualize import cityscape_visualization, windflow_visualization, drone_visualization
 from pathlib import Path
 
 import warnings
@@ -36,8 +36,8 @@ def generate_drone_positions(args):
 
     if not Path(args.output_dir).exists():
         Path(args.output_dir).mkdir(parents=True)
-        
-    generate_positions(cityscapes_dir, args.num_positions, Path(args.output_dir))
+
+    batch_export_robot(args.output_dir, cityscapes_dir)
 
 
 def create_windflows(args):
@@ -103,6 +103,18 @@ def visualize_windflow(args):
             windflow_visualization(cityscape_path, i, args.map_size, args.fig_size, args.export_dir / f"{i.stem}.png")
     else:
         windflow_visualization(cityscape_path, windflow_path, args.map_size, args.fig_size, args.export)
+
+def visuaize_drone(args):
+    drone_path = Path(args.data_dir / "drone_positions" / f"city_{args.index}.csv")
+    if not drone_path.exists():
+        raise ValueError(f"{drone_path} does not exist")
+    map_path = Path(args.data_dir / "cityscapes" / f"city_{args.index}.csv")
+    if not map_path.exists():
+        raise ValueError(f"{map_path} does not exist")
+    
+    args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
+
+    drone_visualization(map_path, drone_path, args.fig_size)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -254,6 +266,18 @@ def main():
     vizsubwind.add_argument(
         "--export-dir", type=Path, default="data/exportviz", help="Export directory"
     )
+    
+    vizsubdrone = vizsub.add_parser("drone", help="Visualize the drone positions")
+    vizsubdrone.add_argument("--data_dir", type=Path, help="Directory containing windflow data", default="data")
+    vizsubdrone.add_argument(
+        "--index",
+        type=int,
+        help="Index of the drone data to visualize",
+        required=True
+    )
+    vizsubdrone.add_argument(
+        "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
+    )
 
     args = parser.parse_args()
 
@@ -277,7 +301,9 @@ def main():
             visualise_cityscape(args)
         elif args.visualize == "windflow" or args.visualize == "wind":
             visualize_windflow(args)
-        
+        elif args.visualize == "drone":
+            visuaize_drone(args)
+
         if not args.visualize:
             viz_parser.print_help()
     

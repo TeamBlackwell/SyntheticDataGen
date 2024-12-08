@@ -86,7 +86,7 @@ def generate_robot_coordinates(robot_dir, buildings_file):
     df = pd.read_csv(buildings_file)
     robot_df = find_robot_coordinates(df.to_numpy())
     basename = os.path.basename(buildings_file)
-    robot_df.to_csv(os.path.join(robot_dir, f"{basename.replace("csv", "robot")}.csv"))
+    robot_df.to_csv(os.path.join(robot_dir, f"{basename.split('.csv')[0]}.csv"))
 
 def batch_export_robot(robot_dir,data_directory):
     for filename in tqdm(glob(os.path.join(data_directory, "*"))):
