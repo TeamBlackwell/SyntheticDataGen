@@ -9,6 +9,8 @@ import utils
 from PIL import Image
 from matplotlib.gridspec import GridSpec
 import os
+import matplotlib
+matplotlib.use('TkAgg') 
 
 fig2, ax2 = plt.subplots()
 fig2.subplots_adjust(left=0, right=1, top=1, bottom=0)
@@ -91,7 +93,7 @@ def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
     lidar_data = []
 
     plt.ion()
-    fig = plt.figure(figsize=(8, 8))  # Overall figure size
+    fig = plt.figure(figsize=(7, 7))  # Overall figure size
     gs = GridSpec(2, 2, height_ratios=[2, 1])
     fig_ax1 = fig.add_subplot(gs[0, :])
     fig_ax2 = fig.add_subplot(gs[1, 0])
