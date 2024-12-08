@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from tqdm import tqdm
+
 from cityscapes import batch_export
 from drone import batch_export_robot
 from windflow import batch_generate_windflow
@@ -91,7 +93,7 @@ def visualise_cityscape(args):
 
 def visualize_windflow(args):
 
-    if not args.export_all:
+    if not args.export_all and not args.export_all_transparent:
         windflow_path = Path(args.data_dir / "windflow" / f"city_{args.index}.npy")
         cityscape_path = Path(args.data_dir / "cityscapes" / f"city_{args.index}.csv")
 
@@ -120,6 +122,26 @@ def visualize_windflow(args):
                 args.map_size,
                 args.fig_size,
                 args.export_dir / f"{i.stem}.png",
+            )
+    elif args.export_all_transparent:
+        print(
+            f"Ignoring value of index and exporting all transparent windflow data in {args.data_dir / 'windflow'} to {args.export_dir}"
+        )
+        args.export_dir = Path(args.export_dir)
+        if not args.export_dir.exists():
+            args.export_dir.mkdir(parents=True)
+
+        for i in tqdm((args.data_dir / "windflow").glob("*.npy"), desc="Processing"):
+            cityscape_path = args.data_dir / "cityscapes" / f"{i.stem}.csv"
+            if not cityscape_path.exists():
+                continue
+            windflow_visualization(
+                cityscape_path,
+                i,
+                args.map_size,
+                args.fig_size,
+                args.export_dir / f"{i.stem}_transparent.png",
+                transparent=True,
             )
     else:
         windflow_visualization(
