@@ -3,8 +3,8 @@ from pathlib import Path
 import random
 from tqdm import tqdm
 
-MAX_X = 200
-MAX_Y = 200
+MAX_X = 100
+MAX_Y = 100
 
 
 # @TODO: Need to optimise the method for finding empty position

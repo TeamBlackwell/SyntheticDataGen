@@ -1,1 +1,1 @@
-from .positions import generate_positions
+from .generate_robot_coords import batch_export_robot, find_robot_coordinates
