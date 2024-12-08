@@ -165,17 +165,17 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
 
         for i in range(len(positions)):
             position = (positions.iloc[i]["xr"], positions.iloc[i]["yr"])
+            lidar_positions_df.loc[idx] = [city_id, i, position[0], position[1]]
             # scale to 800x800 map by multiplying above by 800/100
-            position = (position[0] * 8, position[1] * 8)
+            scaled_position = (position[0] * 8, position[1] * 8)
 
             lidar_output = run_lidar_only(
                 200,
                 uncertainty=(0.5, 0.01),
                 binary_map_mask=binary_map,
-                position=position,
+                position=scaled_position,
             )
 
-            lidar_positions_df.loc[idx] = [city_id, i, position[0], position[1]]
             np.save(output_dir / f"{city.stem}_pos{i}.npy", lidar_output)
             idx += 1
 
