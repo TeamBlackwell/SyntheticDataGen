@@ -9,11 +9,6 @@ import utils
 from PIL import Image
 
 
-fig2, ax2 = plt.subplots()
-
-fig2.subplots_adjust(left=0, right=1, top=1, bottom=0)
-
-
 def draw_arrow(surface, color, start, end, width=5, head_length=15, head_width=10):
     """
     Draws an arrow on the Pygame surface.
@@ -71,6 +66,10 @@ def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
 
 
 def run_with_index(data_dir, index, screen_size = 800, padding = 0, debug=True):
+    fig2, ax2 = plt.subplots()
+
+    fig2.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
     previous_position = (0, 0)
 
     cityimage_path = data_dir / "exportviz" / f"city_{index}.png"

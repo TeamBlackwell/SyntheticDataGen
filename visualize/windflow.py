@@ -56,6 +56,36 @@ def windflow_visualization(
             aspect="equal",
             alpha=0.0,
         )
+
+
+    # Plot windflow vectors
+
+    start_x = int((world_size / 2) - (map_size / 2))
+    start_y = int((world_size / 2) - (map_size / 2))
+    vector_resolution = 3
+
+    arr = np.rot90(arr, 1)
+    # flip ud
+    arr = np.flipud(arr)
+    if plot_vector:
+        for i in range(start_x, start_x + map_size, vector_resolution):
+            for j in range(start_y, start_y + map_size, vector_resolution):
+                # the scale should be the magnitude of the vector
+                mag = np.linalg.norm(arr[i, j])
+                # scale mag to be between 0 and 150
+                mag = (mag / np.max(mag_array)) * 300
+
+                plt.quiver(
+                    j,
+                    world_size - i,
+                    arr[i, j, 1],
+                    -arr[i, j, 0],
+                    color="red",
+                    alpha=0.5,
+                    scale=mag,
+                    angles="xy",
+                )
+
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
     buildings_df.columns = ["x1", "y1", "x2", "y2", "height"]
@@ -79,32 +109,6 @@ def windflow_visualization(
             )
         )
 
-    # @TODO: add a quiver arrow showing wind direction, from the bottom left (0, 0).
-    # it should be a red arrow, the text should say "speed: x, y" of the wind
-
-    # Plot windflow vectors
-
-    start_x = int((world_size / 2) - (map_size / 2))
-    start_y = int((world_size / 2) - (map_size / 2))
-    vector_resolution = 3
-    if plot_vector:
-        for i in range(start_x, start_x + map_size, vector_resolution):
-            for j in range(start_y, start_y + map_size, vector_resolution):
-                # the scale should be the magnitude of the vector
-                mag = np.linalg.norm(arr[i, j])
-                # scale mag to be between 0 and 150
-                mag = (mag / np.max(mag_array)) * 300
-
-                plt.quiver(
-                    j,
-                    world_size - i,
-                    arr[i, j, 0],
-                    arr[i, j, 1],
-                    color="red",
-                    alpha=0.5,
-                    scale=mag,
-                    angles="xy",
-                )
 
     # Set plot properties
     plt.title("Windflow Visualization")
