@@ -237,6 +237,12 @@ def add_vizualiser_commands(viz_parser):
         help="Export all figures with transparent background",
         action="store_true",
     )
+    vizsubwind.add_argument(
+        "--export-transparent",
+        default=False,
+        help="Export the figure with transparent background",
+        action="store_true",
+    )
 
     vizsubdrone = vizsub.add_parser("drone", help="Visualize the drone positions")
     vizsubdrone.add_argument(

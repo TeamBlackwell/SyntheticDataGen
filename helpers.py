@@ -148,8 +148,9 @@ def visualize_windflow(args):
                 transparent=True,
             )
     else:
+
         windflow_visualization(
-            cityscape_path, windflow_path, args.map_size, args.fig_size, args.export, args.plot_vector
+            cityscape_path, windflow_path, args.map_size, args.fig_size, args.export, args.plot_vector, args.export_transparent
         )
 
 

@@ -9,3 +9,5 @@ city_0_*.npy
 __pycache__/
 
 data*
+
+test_*.png
