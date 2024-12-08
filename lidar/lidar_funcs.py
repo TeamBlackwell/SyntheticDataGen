@@ -179,4 +179,5 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
             np.save(output_dir / f"{city.stem}_pos{i}.npy", lidar_output)
             idx += 1
 
-    lidar_positions_df.to_csv(output_dir / "positions.csv", index=False)
+    master_data_dir = output_dir.parent
+    lidar_positions_df.to_csv(master_data_dir / "lidar_positions.csv", index=False)
