@@ -220,6 +220,12 @@ def add_vizualiser_commands(viz_parser):
     vizsubwind.add_argument(
         "--export-dir", type=Path, default="data/exportviz", help="Export directory"
     )
+    vizsubwind.add_argument(
+        "--plot-vector",
+        default=False,
+        help="Plot the wind vectors",
+        action="store_true",
+    )
 
     vizsubdrone = vizsub.add_parser("drone", help="Visualize the drone positions")
     vizsubdrone.add_argument(

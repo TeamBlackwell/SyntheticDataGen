@@ -17,6 +17,7 @@ def windflow_visualization(
     map_size: int,
     fig_size=(5, 5),
     export=None,
+    plot_vector=False,
 ):
     """
     Visualize the cityscape with buildings and windflow data
@@ -65,9 +66,9 @@ def windflow_visualization(
     # Create a pastel version of the 'jet' colormap
     pastel_jet = make_pastel_colormap("jet", blend_factor=0.5)
 
-    sns.heatmap(mag_array, cmap=pastel_jet)
+    # sns.heatmap(mag_array, cmap=pastel_jet)
     # plot the magnitude array
-    # plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic")
+    plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic")
 
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
@@ -108,17 +109,25 @@ def windflow_visualization(
     # it should be a red arrow, the text should say "speed: x, y" of the wind
 
     # Plot windflow vectors
-    for i in range(0, arr.shape[0], 2):
-        for j in range(0, arr.shape[1], 2):
-            plt.quiver(
-                j,
-                map_size - i,
-                arr[i, j, 0],
-                -arr[i, j, 1],
-                color="red",
-                alpha=0.5,
-                angles="xy",
-            )
+
+    if plot_vector:
+        for i in range(0, arr.shape[0], 3):
+            for j in range(0, arr.shape[1], 3):
+                # the scale should be the magnitude of the vector
+                mag = np.linalg.norm(arr[i, j])
+                # scale mag to be between 0 and 150
+                mag = (mag / np.max(mag_array)) * 150
+
+                plt.quiver(
+                    j,
+                    map_size - i,
+                    arr[i, j, 0],
+                    -arr[i, j, 1],
+                    color="red",
+                    alpha=0.5,
+                    scale=mag,
+                    angles="xy",
+                )
 
     # Set plot properties
     plt.title("Windflow Visualization")

@@ -123,7 +123,7 @@ def visualize_windflow(args):
             )
     else:
         windflow_visualization(
-            cityscape_path, windflow_path, args.map_size, args.fig_size, args.export
+            cityscape_path, windflow_path, args.map_size, args.fig_size, args.export, args.plot_vector
         )
 
 
