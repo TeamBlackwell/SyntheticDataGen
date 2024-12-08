@@ -35,11 +35,13 @@ def batch_generate_windflow(cityscapes_dir: Path, output_dir: Path,  winds_csv: 
         cityscape = cityscape.to_numpy()
         cityscape = cityscape[:, 0:4]
 
-        if not list_mode:
+        speed_x, speed_y = speed_candidate_list[np.random.choice(len(speed_candidate_list))]
+
+        try:
             flow = run_flow(cityscape, pre_time, post_time, map_size, speed_x, speed_y)
-        else:
-            speed_x, speed_y = speed_candidate_list[np.random.choice(len(speed_candidate_list))]
-            flow = run_flow(cityscape, pre_time, post_time, map_size, speed_x, speed_y)
+        except ValueError:
+            tqdm.write(f"Cityscape {cityscape_file} failed")
+            continue
 
         output_path = output_dir / cityscape_file.name
         np.save(output_path.with_suffix(".npy"), flow)
