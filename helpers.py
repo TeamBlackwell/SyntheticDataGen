@@ -2,7 +2,7 @@ from pathlib import Path
 
 from cityscapes import batch_export
 from drone import batch_export_robot
-from windflow import generate_windflow
+from windflow import batch_generate_windflow
 from lidar import gen_iterative_lidar
 from visualize import (
     cityscape_visualization,
@@ -45,7 +45,18 @@ def create_windflows(args):
         raise ValueError(f"{cityscapes_dir} does not exist")
     if not output_dir.exists():
         output_dir.mkdir(parents=True)
-    generate_windflow(cityscapes_dir, output_dir)
+
+    winds_csv = Path(args.winds_csv)
+
+    args.speed_x = list(map(float, args.speed_x.split(",")))
+    args.speed_y = list(map(float, args.speed_y.split(",")))
+
+    if len(args.speed_x) != len(args.speed_y):
+        raise ValueError("speed_x and speed_y must be of the same length")
+    
+    speed_candidate_list = [(x, y) for x, y in zip(args.speed_x, args.speed_y)]
+
+    batch_generate_windflow(cityscapes_dir, output_dir, winds_csv, speed_candidate_list=speed_candidate_list, pre_time=args.pre_time, post_time=args.post_time, map_size=args.map_size)
 
 
 def generate_matlab():

@@ -106,6 +106,49 @@ def add_generate_commands(genparser):
         default="data/windflow",
         help="Directory to save windflow data",
     )
+    # speed x
+    windflow_parser.add_argument(
+        "--speed_x",
+        type=str,
+        default="5",
+        help="Speed in the x direction (can be one or many values)",
+    )
+    # speed y
+    windflow_parser.add_argument(
+        "--speed_y",
+        type=str,
+        default="-5",
+        help="Speed in the y direction (can be one or many values)",
+    )
+    # path to winds.csv
+    windflow_parser.add_argument(
+        "--winds_csv",
+        type=str,
+        default="data/winds.csv",
+        help="Path to the winds.csv file",
+    )
+    
+    # pre_time
+    windflow_parser.add_argument(
+        "--pre_time",
+        type=int,
+        default=268,
+        help="Pre time for the windflow data",
+    )
+    # post_time
+    windflow_parser.add_argument(
+        "--post_time",
+        type=int,
+        default=1,
+        help="Post time for the windflow data (Average window)",
+    )
+    # map size
+    windflow_parser.add_argument(
+        "--map_size",
+        type=int,
+        default=100,
+        help="Side length of map in metres",
+    )
 
     lidar_parser = gensub.add_parser("lidar", help="Generate lidar data")
 
