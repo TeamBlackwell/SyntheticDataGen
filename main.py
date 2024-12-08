@@ -69,7 +69,18 @@ def add_generate_commands(genparser):
         default=10,
         help="Number of drone positions to generate",
     )
-
+    drone_parser.add_argument(
+        "--min_distance",
+        type=int,
+        default=2,
+        help="Minimum distance to buildings (buffer)",
+    )
+    drone_parser.add_argument(
+        "--radius",
+        type=int,
+        default=40,
+        help="Radius of the applicable area from the center of the cityscape",
+    )
     drone_parser.add_argument(
         "--output_dir",
         type=str,

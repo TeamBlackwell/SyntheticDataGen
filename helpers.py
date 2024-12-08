@@ -35,7 +35,7 @@ def generate_drone_positions(args):
     if not Path(args.output_dir).exists():
         Path(args.output_dir).mkdir(parents=True)
 
-    batch_export_robot(args.output_dir, cityscapes_dir)
+    batch_export_robot(args.output_dir, cityscapes_dir, args.num_positions, args.min_distance, args.radius)
 
 
 def create_windflows(args):
