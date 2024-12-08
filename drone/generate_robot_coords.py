@@ -87,7 +87,7 @@ def find_robot_coordinates(
 
     # make the points so that they are integers
     robot_coords = np.array(robot_coords)
-    robot_coords = np.round(robot_coords, 2)
+    robot_coords = np.round(robot_coords, 0)
 
     # Convert to DataFrame
     df = pd.DataFrame(robot_coords, columns=["xr", "yr", "zr"])
