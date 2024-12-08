@@ -126,7 +126,6 @@ def windflow_visualization(
                     color="red",
                     alpha=0.5,
                     scale=mag,
-                    scale=100,
                     angles="xy",
                 )
 
