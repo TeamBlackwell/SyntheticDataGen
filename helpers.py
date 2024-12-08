@@ -3,7 +3,7 @@ from pathlib import Path
 from cityscapes import batch_export
 from drone import batch_export_robot
 from windflow import batch_generate_windflow
-from lidar import gen_iterative_lidar
+from lidar import gen_iterative_lidar, run_with_index
 from visualize import (
     cityscape_visualization,
     windflow_visualization,
@@ -123,7 +123,7 @@ def visualize_windflow(args):
             )
     else:
         windflow_visualization(
-            cityscape_path, windflow_path, args.map_size, args.fig_size, args.export
+            cityscape_path, windflow_path, args.map_size, args.fig_size, args.export, args.plot_vector
         )
 
 
@@ -138,3 +138,11 @@ def visuaize_drone(args):
     args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
 
     drone_visualization(map_path, drone_path, args.map_size, args.fig_size)
+
+def run_demo(args):
+
+    data_dir = Path(args.data_dir)
+    if not data_dir.exists() or not data_dir.is_dir():
+        raise ValueError(f"{data_dir} does not exist")
+    
+    run_with_index(Path(args.data_dir), args.index)
