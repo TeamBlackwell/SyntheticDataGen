@@ -12,6 +12,7 @@ from visualize import (
     drone_visualization,
 )
 from pathlib import Path
+from tqdm import tqdm
 
 
 def generate_cityscapes(args):
@@ -112,7 +113,7 @@ def visualize_windflow(args):
         if not args.export_dir.exists():
             args.export_dir.mkdir(parents=True)
 
-        for i in (args.data_dir / "windflow").glob("*.npy"):
+        for i in tqdm(list((args.data_dir / "windflow").glob("*.npy"))):
             cityscape_path = args.data_dir / "cityscapes" / f"{i.stem}.csv"
             if not cityscape_path.exists():
                 continue
