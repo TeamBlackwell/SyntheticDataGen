@@ -77,7 +77,7 @@ def draw_prediction(surface, prediction, drone_pos, alpha=0.5):
     )
 
 
-def run_with_index(data_dir, index):
+def run_with_index(data_dir, index,debug=False):
     previous_position = (0, 0)
     from . import env
     from . import lidar_funcs as lidar
@@ -131,7 +131,6 @@ def run_with_index(data_dir, index):
         magnitude = math.sqrt(wind_robot[0] ** 2 + wind_robot[1] ** 2)
         magnitude = math.floor(25 * magnitude)
         angle = math.atan2(wind_robot[1], wind_robot[0])
-        print(f"Angle: {math.degrees(angle)}, Magnitude: {magnitude}")
         direction = (math.cos(angle), math.sin(angle))
         direction_sign = (1 if direction[0] > 0 else -1, 1 if direction[1] > 0 else -1)
         wind_robot = (
@@ -140,8 +139,9 @@ def run_with_index(data_dir, index):
             laser.position[1]
             + direction_sign[1] * max(min(abs(magnitude * direction[1]), 200), 15),
         )
-
-        print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
+        if debug:
+            print(f"Angle: {math.degrees(angle)}, Magnitude: {magnitude}")
+            print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
         draw_arrow(
             environment.map,
             (0, 0, 0),
@@ -152,8 +152,8 @@ def run_with_index(data_dir, index):
             ),
         )
         # run model to get the prediction of the particular index and particular position of the robot
-        prediction = np.random.rand(21, 21, 2)  # 21x21 grid
-        draw_prediction(environment.map, prediction, laser.position, alpha=0.5)
+        #prediction = np.random.rand(21, 21, 2)  # 21x21 grid
+        #draw_prediction(environment.map, prediction, laser.position, alpha=0.5)
         previous_position = laser.position
         pygame.display.update()
 
