@@ -189,7 +189,10 @@ def add_vizualiser_commands(viz_parser):
         help="File of the cityscape csv",
     )
     vizsubcity.add_argument(
-        "--map_size", type=int, default=500, help="Side length of map in metres"
+        "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    vizsubcity.add_argument(
+        "--world_size", type=int, default=500, help="Side length of map in metres"
     )
     vizsubcity.add_argument(
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
@@ -211,7 +214,10 @@ def add_vizualiser_commands(viz_parser):
         required=True,
     )
     vizsubwind.add_argument(
-        "--map_size", type=int, default=500, help="Side length of map in metres"
+        "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    vizsubwind.add_argument(
+        "--world_size", type=int, default=500, help="Side length of map in metres"
     )
     vizsubwind.add_argument(
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"

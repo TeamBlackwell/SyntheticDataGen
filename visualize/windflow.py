@@ -14,6 +14,7 @@ def windflow_visualization(
     cityscape_path: Path,
     windflow_path: Path,
     map_size: int,
+    world_size: int,
     fig_size=(5, 5),
     export=None,
     plot_vector=False,
@@ -57,8 +58,8 @@ def windflow_visualization(
         building["x1"], building["y1"] = building["y1"], building["x1"]
         building["x2"], building["y2"] = building["y2"], building["x2"]
 
-        building["x1"], building["y1"] = building["y1"], 500 - building["x1"] - 6
-        building["x2"], building["y2"] = building["y2"], 500 - building["x2"] - 6
+        building["x1"], building["y1"] = building["y1"], world_size - building["x1"] - 6
+        building["x2"], building["y2"] = building["y2"], world_size - building["x2"] - 6
 
         plt.gca().add_patch(
             Rectangle(
@@ -100,11 +101,12 @@ def windflow_visualization(
     plt.title("Windflow Visualization")
     plt.xlabel("X Coordinate")
     plt.ylabel("Y Coordinate")
-    plt.xlim(0, map_size)
-    plt.ylim(0, map_size)
+    plt.xlim((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
+    print((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
+    plt.ylim((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
     # plt.grid(True, linestyle="--", alpha=0.7)
     # add color bar and name the color bar
-    plt.axis("equal")
+    # plt.axis("equal")
 
     # Show the plot
     plt.tight_layout()

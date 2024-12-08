@@ -90,7 +90,7 @@ def visualise_cityscape(args):
 
     args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
 
-    cityscape_visualization(cityscape_path, args.map_size, args.fig_size)
+    cityscape_visualization(cityscape_path, args.map_size, args.world_size, args.fig_size)
 
 
 def visualize_windflow(args):
@@ -122,6 +122,7 @@ def visualize_windflow(args):
                 cityscape_path,
                 i,
                 args.map_size,
+                args.world_size,
                 args.fig_size,
                 args.export_dir / f"{i.stem}.png",
             )
@@ -144,14 +145,14 @@ def visualize_windflow(args):
                 cityscape_path,
                 i,
                 args.map_size,
+                args.world_size,
                 args.fig_size,
                 args.export_dir / f"{i.stem}_transparent.png",
                 transparent=True,
             )
     else:
-
         windflow_visualization(
-            cityscape_path, windflow_path, args.map_size, args.fig_size, args.export, args.plot_vector, args.export_transparent
+            cityscape_path, windflow_path, args.map_size, args.world_size, args.fig_size, args.export, args.plot_vector, args.export_transparent
         )
 
 
