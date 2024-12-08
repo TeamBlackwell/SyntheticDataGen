@@ -131,6 +131,9 @@ def visualize_windflow(args):
         if not args.export_dir.exists():
             args.export_dir.mkdir(parents=True)
 
+        if args.export_dir == args.data_dir / "exportviz":
+            raise ValueError("Cannot export to exportviz directory")
+
         for i in tqdm((args.data_dir / "windflow").glob("*.npy"), desc="Processing"):
             cityscape_path = args.data_dir / "cityscapes" / f"{i.stem}.csv"
             if not cityscape_path.exists():
