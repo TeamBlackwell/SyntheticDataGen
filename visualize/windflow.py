@@ -27,6 +27,8 @@ def windflow_visualization(
     """
 
     # Create the main plot
+    print(windflow_path)
+    print(cityscape_path)
 
     plt.figure(figsize=fig_size)
 
@@ -98,6 +100,22 @@ def windflow_visualization(
     #     s=20,
     #     label="Building Centers",
     # )
+
+    # add a quiver arrow showing wind direction, from the bottom left (0, 0).
+    # it should be a red arrow, the text should say "speed: x, y" of the wind
+
+    # Plot windflow vectors
+    # for i in range(0, arr.shape[0], 5):
+    #     for j in range(0, arr.shape[1], 5):
+    #         plt.quiver(
+    #             j,
+    #             i,
+    #             arr[i, j, 0],
+    #             arr[i, j, 1],
+    #             color="red",
+    #             alpha=0.5,
+    #             angles="xy",
+    #         )
 
     # Set plot properties
     plt.title("Windflow Visualization")
