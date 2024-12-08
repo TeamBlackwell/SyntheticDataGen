@@ -117,6 +117,7 @@ def windflow_visualization(
                 -arr[i, j, 1],
                 color="red",
                 alpha=0.5,
+                scale=100,
                 angles="xy",
             )
 

@@ -65,7 +65,6 @@ class Lidar:
                 distance = self.Range
                 lidar_data.append(distance)
         lidar_data = np.array(lidar_data) / self.Range
-        print(len(lidar_data))
         # angles = np.linspace(-180, 180, 360, False)
         # plt.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
         # plt.plot(angles, lidar_data, color="r")
