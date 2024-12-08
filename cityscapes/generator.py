@@ -167,6 +167,7 @@ def get_bounds_of_house(point, node, factor=7, alpha=0.3, beta=0.7):
 
 def batch_export(
     path: Path,
+    cont: bool,
     name_prefix: str,
     map_size: int,
     n_cityscapes: int,
@@ -181,6 +182,13 @@ def batch_export(
     n_buildings: number of buildings in each cityscape.
     building_density: controls the clustering of the buildings in the cityscape.
     """
+    last_index = 0
+    if cont:
+        # find last index with prefix in path
+        for file in path.glob(f"{name_prefix}_*.csv"):
+            last_index = max(last_index, int(file.stem.split("_")[-1]))
+        pass
+
     for i in tqdm(range(n_cityscapes)):
         proc_gen = CityScapeGenerator(
             2,
@@ -194,4 +202,5 @@ def batch_export(
             map_size=map_size,
         )
         proc_gen.generate_sample()
-        proc_gen.export(f"{path}/{name_prefix}_{i}")
+
+        proc_gen.export(f"{path}/{name_prefix}_{i+last_index}")
