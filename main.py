@@ -2,6 +2,9 @@
 CLI for generating data
 """
 
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
 import argparse
 from cityscapes import batch_export
 from drone import batch_export_robot
@@ -114,7 +117,7 @@ def visuaize_drone(args):
     
     args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
 
-    drone_visualization(map_path, drone_path, args.fig_size)
+    drone_visualization(map_path, drone_path, args.map_size, args.fig_size)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -274,6 +277,9 @@ def main():
         type=int,
         help="Index of the drone data to visualize",
         required=True
+    )
+    vizsubdrone.add_argument(
+        "--map_size", type=int, default=100, help="Side length of map in metres"
     )
     vizsubdrone.add_argument(
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"

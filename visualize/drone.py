@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def drone_visualization(map_path, drone_path, figsize):
+def drone_visualization(map_path, drone_path, mapsize, figsize):
     """
     Visualize the cityscape with buildings and drone positions.
     
@@ -36,8 +36,8 @@ def drone_visualization(map_path, drone_path, figsize):
 
     robot_coords = pd.read_csv(drone_path)
     plt.scatter(
-        robot_coords['x_r'], 
-        robot_coords['y_r'], 
+        robot_coords['xr'], 
+        robot_coords['yr'], 
         color='red', 
         s=100, 
         label='Drone Positions'
@@ -46,8 +46,8 @@ def drone_visualization(map_path, drone_path, figsize):
     # Annotate drone positions
     for i, row in robot_coords.iterrows():
         plt.annotate(
-            f'Drone {i+1}\n(z={row["z_r"]})', 
-            (row['x_r'], row['y_r']), 
+            f'Drone {i+1}', 
+            (row['xr'], row['yr']), 
             xytext=(10, 10),
             textcoords='offset points',
             color='red',
@@ -58,8 +58,8 @@ def drone_visualization(map_path, drone_path, figsize):
     plt.title('Cityscape Visualization')
     plt.xlabel('X Coordinate')
     plt.ylabel('Y Coordinate')
-    plt.xlim(0, 100)
-    plt.ylim(0, 100)
+    plt.xlim(0, mapsize)
+    plt.ylim(0, mapsize)
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.legend()
     plt.axis('equal')
