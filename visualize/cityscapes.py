@@ -4,7 +4,9 @@ from matplotlib.patches import Rectangle
 from pathlib import Path
 
 
-def cityscape_visualization(cityscape_path: Path, map_size: int, world_size: int, fig_size=(5, 5)):
+def cityscape_visualization(
+    cityscape_path: Path, map_size: int, world_size: int, fig_size=(5, 5)
+):
     """
     Visualize the cityscape with buildings
 
@@ -49,8 +51,12 @@ def cityscape_visualization(cityscape_path: Path, map_size: int, world_size: int
     plt.title("Cityscape Visualization")
     plt.xlabel("X Coordinate")
     plt.ylabel("Y Coordinate")
-    plt.xlim((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
-    plt.ylim((world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size)
+    plt.xlim(
+        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    )
+    plt.ylim(
+        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    )
     plt.grid(True, linestyle="--", alpha=0.7)
 
     # Show the plot

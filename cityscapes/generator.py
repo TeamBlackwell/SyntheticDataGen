@@ -109,7 +109,7 @@ class CityScapeGenerator(object):
     def export(self, path):
         if not len(self.buildings):
             raise Exception("there are no buildings to export")
-        
+
         # round the coordinates to 0 decimal places
         self.buildings = np.round(self.buildings, 0)
         # do mathematics. This is a very important step.
@@ -118,7 +118,7 @@ class CityScapeGenerator(object):
         # center of world is 250, 250. So we add 250 to the x and y coordinates.
         # but we place the buildings at the center of the map. So we subtract 50 from the x and y coordinates.
         # this is the same as adding 200 to the x and y coordinates.
-        self.buildings[:, :4] += ((self.world_size / 2) - (self.map_size / 2))
+        self.buildings[:, :4] += (self.world_size / 2) - (self.map_size / 2)
 
         df = pd.DataFrame(self.buildings)
         df.columns = ["x1", "y1", "x2", "y2", "height"]

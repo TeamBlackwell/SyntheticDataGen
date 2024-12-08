@@ -1,4 +1,3 @@
-
 from matplotlib import pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
