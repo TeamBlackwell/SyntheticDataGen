@@ -49,6 +49,11 @@ Run the following command to generate 2D LiDAR scans:
 python main.py gen lidar
 ```
 
+Run the following command to generate transparent cityscapes:
+```bash
+python main.py viz wind --index 10 --export-all-transparent --export-dir data/transparent
+```
+
 To the run the interactive demo :video_game:
 
 ```bash
