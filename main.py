@@ -36,6 +36,7 @@ def generate_drone_positions(args):
 
     if not Path(args.output_dir).exists():
         Path(args.output_dir).mkdir(parents=True)
+        
     generate_positions(cityscapes_dir, args.num_positions, Path(args.output_dir))
 
 

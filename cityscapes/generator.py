@@ -60,10 +60,6 @@ class CityScapeGenerator(object):
             self.debug_ax[0][0].legend(["Skyscrapers", "Houses"])
         self.populate_with_buildings()
       
-        # self.robot_coords = self.find_robot_coordinates(
-        #     buildings=self.buildings, center=self.center
-        # )
-
         if show:
             plt.show()
 
