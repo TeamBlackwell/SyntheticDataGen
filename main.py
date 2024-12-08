@@ -283,6 +283,18 @@ def add_demo_commands(demo_parser):
         required=True,
         help="Index of the data to visualize",
     )
+    demo_parser.add_argument(
+        "--padding",
+        type=int,
+        default=20,
+        help="Padding around the map",
+    )
+    demo_parser.add_argument(
+        "--screen_size",
+        type=int,
+        default=800,
+        help="Size of the screen",
+    )
 
     return demo_parser
 

@@ -200,4 +200,4 @@ def run_demo(args):
     if not data_dir.exists() or not data_dir.is_dir():
         raise ValueError(f"{data_dir} does not exist")
 
-    run_with_index(Path(args.data_dir), args.index)
+    run_with_index(Path(args.data_dir), args.index, args.screen_size, args.padding)
