@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pathlib import Path
-import seaborn as sns
 
 
 def windflow_visualization(
@@ -27,10 +26,6 @@ def windflow_visualization(
     - windflow_path: path to windflow csv file.
     - map_size: side length of the cityscape in meters.
     """
-
-    # Create the main plot
-    print(windflow_path)
-    print(cityscape_path)
 
     plt.figure(figsize=fig_size)
 
@@ -93,19 +88,8 @@ def windflow_visualization(
             )
         )
 
-    # # Plot building centers
-    # building_centers_x = (buildings_df["x1"] + buildings_df["x2"]) / 2
-    # building_centers_y = (buildings_df["y1"] + buildings_df["y2"]) / 2
-    # plt.scatter(
-    #     building_centers_x,
-    #     building_centers_y,
-    #     color="blue",
-    #     alpha=0.5,
-    #     s=20,
-    #     label="Building Centers",
-    # )
 
-    # add a quiver arrow showing wind direction, from the bottom left (0, 0).
+    #@TODO: add a quiver arrow showing wind direction, from the bottom left (0, 0).
     # it should be a red arrow, the text should say "speed: x, y" of the wind
 
     # Plot windflow vectors
