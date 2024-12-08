@@ -35,8 +35,8 @@ if __name__ == "__main__":
 
     import env 
     import lidar_funcs as lidar
-    
-    environment = env.buildEnvironment((800, 800))
+
+    environment = env.buildEnvironment((800, 800), "../data/exportviz/city_0.png")
     environment.originalMap = environment.map.copy()
     laser = lidar.Lidar(150, environment.originalMap, uncertainty=(0.5, 0.01))
     # environment.map.fill((0, 0, 0))
