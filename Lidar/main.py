@@ -110,7 +110,7 @@ def run_with_index(data_dir, index):
             if position != previous_position:
                 sensor_data = laser.sense_obstacles()
                 environment.dataStorage(sensor_data)
-        if position != previous_position:
+        if laser.position != previous_position:
             environment.map.blit(environment.infomap, (0, 0))
             pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
             robot_position = (laser.position[0] // 8, laser.position[1] // 8)
@@ -128,7 +128,8 @@ def run_with_index(data_dir, index):
 
             wind_robot = windflow[robot_position[0]][robot_position[1]]
             magnitude = math.sqrt(wind_robot[0] ** 2 + wind_robot[1] ** 2)
-            magnitude = math.floor(math.log(25 * magnitude))
+            magnitude = math.log1p(magnitude) * 25  # log scaling
+            magnitude = math.floor(magnitude)
             angle = math.atan2(wind_robot[1], wind_robot[0])
             print(f"Angle: {math.degrees(angle)}, Magnitude: {magnitude}")
             direction = (math.cos(angle), math.sin(angle))
@@ -138,9 +139,9 @@ def run_with_index(data_dir, index):
             )
             wind_robot = (
                 laser.position[0]
-                + direction_sign[0] * max(min(abs(magnitude * direction[0]), 200), 15),
+                + direction_sign[0] * max(min(abs(magnitude * direction[0]), 150), 15),
                 laser.position[1]
-                + direction_sign[1] * max(min(abs(magnitude * direction[1]), 200), 15),
+                + direction_sign[1] * max(min(abs(magnitude * direction[1]), 150), 15),
             )
 
             print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
@@ -156,6 +157,12 @@ def run_with_index(data_dir, index):
             # run model to get the prediction of the particular index and particular position of the robot
             prediction = np.random.rand(21, 21, 2)  # 21x21 grid
             draw_prediction(environment.map, prediction, laser.position, alpha=0.5)
+
+            imgtrans = pygame.image.load(
+                f"data/transparent/city_{index}_transparent.png"
+            )
+            environment.map.blit(imgtrans, (0, 0))
+
         previous_position = laser.position
         pygame.display.update()
 
