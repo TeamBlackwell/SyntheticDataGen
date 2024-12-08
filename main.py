@@ -247,6 +247,22 @@ def add_vizualiser_commands(viz_parser):
     return viz_parser
 
 
+def add_demo_commands(demo_parser):
+    demo_parser.add_argument(
+        "--data_dir",
+        type=str,
+        default="data",
+        help="Data directory",
+    )
+    demo_parser.add_argument(
+        "--index",
+        type=int,
+        required=True,
+        help="Index of the data to visualize",
+    )
+    
+    return demo_parser
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate synthetic data for predicting local wind fields"
@@ -263,6 +279,11 @@ def main():
         "visualize", aliases=["viz"], help="Visualize the anything"
     )
     viz_parser = add_vizualiser_commands(viz_parser)
+    
+    demo_parser = subprasers.add_parser(
+        "demo", help="Run the demo"
+    )
+    demo_parser = add_demo_commands(demo_parser)
 
     args = parser.parse_args()
 
@@ -291,7 +312,10 @@ def main():
 
         if not args.visualize:
             viz_parser.print_help()
-
+        
+    elif args.command == "demo":
+        h.run_demo(args)
+        
     if not args.command:
         parser.print_help()
 
