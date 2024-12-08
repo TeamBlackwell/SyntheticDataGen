@@ -107,6 +107,8 @@ class CityScapeGenerator(object):
     def export(self, path):
         if not len(self.buildings):
             raise Exception("there are no buildings to export")
+        # round the coordinates to 0 decimal places
+        self.buildings = np.round(self.buildings, 0)
         df = pd.DataFrame(self.buildings)
         df.columns = ["x1", "y1", "x2", "y2", "height"]
         df.to_csv(f"{path}.csv", index=False)
