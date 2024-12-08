@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pathlib import Path
+import seaborn as sns
 
 
 def windflow_visualization(
@@ -63,8 +64,10 @@ def windflow_visualization(
 
     # Create a pastel version of the 'jet' colormap
     pastel_jet = make_pastel_colormap("jet", blend_factor=0.5)
+
+    sns.heatmap(mag_array, cmap=pastel_jet)
     # plot the magnitude array
-    plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic")
+    # plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic")
 
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
@@ -105,17 +108,17 @@ def windflow_visualization(
     # it should be a red arrow, the text should say "speed: x, y" of the wind
 
     # Plot windflow vectors
-    # for i in range(0, arr.shape[0], 5):
-    #     for j in range(0, arr.shape[1], 5):
-    #         plt.quiver(
-    #             j,
-    #             i,
-    #             arr[i, j, 0],
-    #             arr[i, j, 1],
-    #             color="red",
-    #             alpha=0.5,
-    #             angles="xy",
-    #         )
+    for i in range(0, arr.shape[0], 2):
+        for j in range(0, arr.shape[1], 2):
+            plt.quiver(
+                j,
+                map_size - i,
+                arr[i, j, 0],
+                -arr[i, j, 1],
+                color="red",
+                alpha=0.5,
+                angles="xy",
+            )
 
     # Set plot properties
     plt.title("Windflow Visualization")
@@ -140,7 +143,7 @@ def windflow_visualization(
         plt.gcf().set_size_inches(8, 8)
         plt.savefig(export)
     else:
-        plt.colorbar()
+        # plt.colorbar()
         plt.show()
 
     # # Plot windflow data
