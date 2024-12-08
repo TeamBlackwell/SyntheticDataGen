@@ -88,7 +88,6 @@ def run_with_index(data_dir, index):
     environment = env.buildEnvironment((800, 800), str(cityimage_path))
     environment.originalMap = environment.map.copy()
     laser = lidar.Lidar(150, environment.originalMap, uncertainty=(0.5, 0.01))
-    # environment.map.fill((0, 0, 0))
     environment.infomap = environment.map.copy()
     pygame.init()
     running = True
@@ -99,8 +98,6 @@ def run_with_index(data_dir, index):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            # elif not pygame.mouse.get_focused():
-            # sensorON = False
             # if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_focused():
                 sensorON = True
@@ -110,50 +107,62 @@ def run_with_index(data_dir, index):
         if sensorON:
             position = pygame.mouse.get_pos()
             laser.position = position
-            sensor_data = laser.sense_obstacles()
-            environment.dataStorage(sensor_data)
-        environment.map.blit(environment.infomap, (0, 0))
-        pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
-        robot_position = (laser.position[0] // 8, laser.position[1] // 8)
+            if position != previous_position:
+                sensor_data = laser.sense_obstacles()
+                environment.dataStorage(sensor_data)
+        if laser.position != previous_position:
+            environment.map.blit(environment.infomap, (0, 0))
+            pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
+            robot_position = (laser.position[0] // 8, laser.position[1] // 8)
 
-        windflow = np.load(str(windflow_path))
+            windflow = np.load(str(windflow_path))
 
-        import matplotlib.pyplot as plt
+            import matplotlib.pyplot as plt
 
-        # fig, ax = plt.subplots()
-        # X, Y = np.meshgrid(np.arange(windflow.shape[1]), np.arange(windflow.shape[0]))
-        # U = windflow[:, :, 0]
-        # V = windflow[:, :, 1]
-        # ax.quiver(X, Y, U, V)
-        # plt.show()
+            # fig, ax = plt.subplots()
+            # X, Y = np.meshgrid(np.arange(windflow.shape[1]), np.arange(windflow.shape[0]))
+            # U = windflow[:, :, 0]
+            # V = windflow[:, :, 1]
+            # ax.quiver(X, Y, U, V)
+            # plt.show()
 
-        wind_robot = windflow[robot_position[0]][robot_position[1]]
-        magnitude = math.sqrt(wind_robot[0] ** 2 + wind_robot[1] ** 2)
-        magnitude = math.floor(25 * magnitude)
-        angle = math.atan2(wind_robot[1], wind_robot[0])
-        print(f"Angle: {math.degrees(angle)}, Magnitude: {magnitude}")
-        direction = (math.cos(angle), math.sin(angle))
-        direction_sign = (1 if direction[0] > 0 else -1, 1 if direction[1] > 0 else -1)
-        wind_robot = (
-            laser.position[0]
-            + direction_sign[0] * max(min(abs(magnitude * direction[0]), 200), 15),
-            laser.position[1]
-            + direction_sign[1] * max(min(abs(magnitude * direction[1]), 200), 15),
-        )
+            wind_robot = windflow[robot_position[0]][robot_position[1]]
+            magnitude = math.sqrt(wind_robot[0] ** 2 + wind_robot[1] ** 2)
+            magnitude = math.log1p(magnitude) * 25  # log scaling
+            magnitude = math.floor(magnitude)
+            angle = math.atan2(wind_robot[1], wind_robot[0])
+            print(f"Angle: {math.degrees(angle)}, Magnitude: {magnitude}")
+            direction = (math.cos(angle), math.sin(angle))
+            direction_sign = (
+                1 if direction[0] > 0 else -1,
+                1 if direction[1] > 0 else -1,
+            )
+            wind_robot = (
+                laser.position[0]
+                + direction_sign[0] * max(min(abs(magnitude * direction[0]), 150), 15),
+                laser.position[1]
+                + direction_sign[1] * max(min(abs(magnitude * direction[1]), 150), 15),
+            )
 
-        print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
-        draw_arrow(
-            environment.map,
-            (0, 0, 0),
-            laser.position,
-            (
-                wind_robot[0],
-                wind_robot[1],
-            ),
-        )
-        # run model to get the prediction of the particular index and particular position of the robot
-        prediction = np.random.rand(21, 21, 2)  # 21x21 grid
-        draw_prediction(environment.map, prediction, laser.position, alpha=0.5)
+            print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
+            draw_arrow(
+                environment.map,
+                (0, 0, 0),
+                laser.position,
+                (
+                    wind_robot[0],
+                    wind_robot[1],
+                ),
+            )
+            # run model to get the prediction of the particular index and particular position of the robot
+            prediction = np.random.rand(21, 21, 2)  # 21x21 grid
+            draw_prediction(environment.map, prediction, laser.position, alpha=0.5)
+
+            imgtrans = pygame.image.load(
+                f"data/transparent/city_{index}_transparent.png"
+            )
+            environment.map.blit(imgtrans, (0, 0))
+
         previous_position = laser.position
         pygame.display.update()
 

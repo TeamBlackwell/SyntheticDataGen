@@ -19,15 +19,32 @@ pip install -r requirements.txt
 Run the following command to generate the cityscapes:
 
 ```bash
-python main.py cityscapes
+python main.py gen cityscapes --n_cityscapes 60 --map_size 100 --n_buildings 20  
 ```
 
 Run the following command to generate drone positions:
 
 ```bash
-python main.py drone
+python main.py gen drone --num_positions 10 --min_distance 4 --radius 45
 ```
 
+Run the following command to generate wind flow fields:
+
+```bash
+python main.py gen windflow
+```
+
+Run the following command to save visualisations of the wind flow fields:
+```bash
+python main.py viz wind --index 10 --export-all
+```
+
+Run the following command to generate 2D LiDAR scans:
+
+```bash
+python main.py gen lidar
+
+```
 The MATLAB files present in this repo must be run from the MATLAB editor application.
 
 ## Notes

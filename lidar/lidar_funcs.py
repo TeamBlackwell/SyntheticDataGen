@@ -145,6 +145,10 @@ def binarize_citymap_image(rgb_image):
 
 def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
 
+    lidar_positions_df = pd.DataFrame(columns=["city_id", "position_id", "xr", "yr"])
+
+    idx = 0
+
     for city in tqdm(list(citymaps_dir.glob("*.png"))):
         # open image as np array, without pygame
         city_map = Image.open(city)
@@ -152,6 +156,7 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
         city_map = city_map.convert("RGB")
         city_map = np.array(city_map)
         binary_map = binarize_citymap_image(city_map)
+        city_id = city.stem.split("_")[1]
 
         corresponding_positions = positions_dir / f"{city.stem}.csv"
         if not corresponding_positions.exists():
@@ -170,4 +175,8 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
                 position=position,
             )
 
+            lidar_positions_df.loc[idx] = [city_id, i, position[0], position[1]]
             np.save(output_dir / f"{city.stem}_pos{i}.npy", lidar_output)
+            idx += 1
+
+    lidar_positions_df.to_csv(output_dir / "positions.csv", index=False)
