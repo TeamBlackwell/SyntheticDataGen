@@ -65,8 +65,9 @@ def windflow_visualization(
     # sns.heatmap(mag_array, cmap=pastel_jet)
     # plot the magnitude array
     if not transparent:
-        plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic")
-
+        plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic", aspect="equal")
+    else:
+        plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic", aspect="equal", alpha=0.0)
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
     buildings_df.columns = ["x1", "y1", "x2", "y2", "height"]
@@ -142,7 +143,7 @@ def windflow_visualization(
         else:
             plt.savefig(export)
     else:
-        # plt.colorbar()
+        plt.colorbar()
         plt.show()
 
     # # Plot windflow data
