@@ -7,6 +7,8 @@ from . import env
 from . import lidar_funcs as lidar
 import utils
 from PIL import Image
+from matplotlib.gridspec import GridSpec
+import os
 
 
 fig2, ax2 = plt.subplots()
@@ -87,8 +89,11 @@ def run_with_index(data_dir, index, debug=False):
     lidar_data = []
 
     plt.ion()
-    fig, ax = plt.subplots()
-
+    fig = plt.figure(figsize=(10, 15))  # Overall figure size
+    gs = GridSpec(2, 2, height_ratios=[2, 1])
+    ax1 = fig.add_subplot(gs[0, :])
+    ax2 = fig.add_subplot(gs[1, 0])
+    ax3 = fig.add_subplot(gs[1, 1])
     while running:
         sensorON = False
 
@@ -113,15 +118,29 @@ def run_with_index(data_dir, index, debug=False):
             windflow = np.load(str(windflow_path))
 
             # plotting the lidar data
-            ax.cla()
+            ax1.cla()
             angles = np.linspace(-180, 180, 360, False)
-            ax.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
-            ax.plot(angles, lidar_data, color="r")
+            ax1.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
+            ax1.plot(angles, lidar_data, color="r")
             # change the limit only for this plot
-            ax.set_ylim(0, 1.5)
-            ax.set_xlabel("Angle (deg)")
-            ax.set_ylabel("D/D_max")
-            ax.set_title("Model Input")
+            ax1.set_ylim(0, 1.5)
+            ax1.set_xlabel("Angle (deg)")
+            ax1.set_ylabel("D/D_max")
+            ax1.set_title("Model Input")
+            # ax2.set_xlabel("Angle (deg)")
+            # ax2.set_ylabel("D/D_max")
+            ax2.set_title("Velocity Error (m/s)")
+            # ax3.set_xlabel("Angle (deg)")
+            # ax3.set_ylabel("D/D_max")
+            ax3.set_title("Direction Error (deg)")
+            prediction = np.random.rand(21, 21, 2)
+            prediction = np.linalg.norm(prediction, axis=2)
+            ax2.imshow(prediction, cmap=cmap, interpolation="bicubic")
+            ax3.imshow(prediction, cmap=cmap, interpolation="bicubic")
+            cbar_ax2 = fig.add_axes([0.87, 0.08, 0.02, 0.26])
+            cbar_ax3 = fig.add_axes([0.44, 0.08, 0.02, 0.26])
+            fig.colorbar(ax2.images[0], cax=cbar_ax2)
+            fig.colorbar(ax3.images[0], cax=cbar_ax3)
             fig.canvas.draw()
             fig.canvas.flush_events()
             plt.pause(0.005)
