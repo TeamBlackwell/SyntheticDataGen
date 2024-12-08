@@ -62,7 +62,7 @@ def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
     )
 
 
-def run_with_index(data_dir, index,debug=False):
+def run_with_index(data_dir, index, debug=False):
     previous_position = (0, 0)
 
     cityimage_path = data_dir / "exportviz" / f"city_{index}.png"
@@ -70,7 +70,7 @@ def run_with_index(data_dir, index,debug=False):
 
     environment = env.buildEnvironment((800, 800), str(cityimage_path))
     environment.originalMap = environment.map.copy()
-    laser = lidar.Lidar(150, environment.originalMap, uncertainty=(0.5, 0.01))
+    laser = lidar.Lidar(200, environment.originalMap, uncertainty=(0.5, 0.01))
     environment.infomap = environment.map.copy()
     pygame.init()
     running = True
@@ -98,11 +98,7 @@ def run_with_index(data_dir, index,debug=False):
         if laser.position != previous_position:
             environment.map.blit(environment.infomap, (0, 0))
             pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
-            robot_position = (laser.position[0] // 8, laser.position[1] // 8)
-
             windflow = np.load(str(windflow_path))
-
-            import matplotlib.pyplot as plt
 
             # fig, ax = plt.subplots()
             # X, Y = np.meshgrid(np.arange(windflow.shape[1]), np.arange(windflow.shape[0]))
@@ -110,8 +106,12 @@ def run_with_index(data_dir, index,debug=False):
             # V = windflow[:, :, 1]
             # ax.quiver(X, Y, U, V)
             # plt.show()
+            data_coords = ((laser.position[0] // 8) + 200, (laser.position[1] // 8) + 200)
 
-            wind_robot = windflow[robot_position[0]][robot_position[1]]
+            wind_robot = windflow[data_coords[0]][data_coords[1]]
+            if debug:
+                print(f"Laser: {laser.position} | Data: {data_coords}")
+            
             magnitude = math.sqrt(wind_robot[0] ** 2 + wind_robot[1] ** 2)
             magnitude = math.log1p(magnitude) * 25  # log scaling
             magnitude = math.floor(magnitude)
@@ -122,6 +122,7 @@ def run_with_index(data_dir, index,debug=False):
                 1 if direction[0] > 0 else -1,
                 1 if direction[1] > 0 else -1,
             )
+
             wind_robot = (
                 laser.position[0]
                 + direction_sign[0] * max(min(abs(magnitude * direction[0]), 150), 15),
@@ -131,6 +132,14 @@ def run_with_index(data_dir, index,debug=False):
 
             if debug:
                 print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
+
+            # wind_robot = (wind_robot[0] - 200, wind_robot[1] - 200)
+            # wind_robot[1] = wind_robot[1] - 200
+
+            if debug:
+                print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
+
+
             draw_arrow(
                 environment.map,
                 (0, 0, 0),
