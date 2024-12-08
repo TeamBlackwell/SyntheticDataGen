@@ -3,10 +3,10 @@ import pygame
 
 
 class buildEnvironment:
-    def __init__(self, MapDimensions):
+    def __init__(self, MapDimensions, path):
         pygame.init()
-
-        self.externalMap = pygame.image.load("../data/exportviz/city_0.png")
+        # self.pointCloud = []
+        self.externalMap = pygame.image.load(path)
         self.maph, self.mapw = MapDimensions
         self.MapWindowName = "2d Lidar simulation"
 
