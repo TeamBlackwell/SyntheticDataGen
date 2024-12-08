@@ -20,6 +20,7 @@ class CityScapeGenerator(object):
         sampling_fncs: List[Tuple[Callable, Tag, Dict[str, int]]],
         *,
         map_size: int = 100,
+        world_size: int = 500,
         debug: bool = False,
     ):
         """
@@ -44,6 +45,7 @@ class CityScapeGenerator(object):
         self.sampling_kwargs = sampling_kwargs
         self.qtree = None
         self.mean = np.zeros(2)
+        self.world_size = world_size
 
         if self.debug:
             self.debug_fig, self.debug_ax = plt.subplots(2, 2)
@@ -107,8 +109,15 @@ class CityScapeGenerator(object):
     def export(self, path):
         if not len(self.buildings):
             raise Exception("there are no buildings to export")
+        
         # round the coordinates to 0 decimal places
         self.buildings = np.round(self.buildings, 0)
+        # do mathematics. This is a very important step.
+        # the map_size is 100x100. But world size is 500x500.
+        # the mapped buildings should be placed at the center of the world.
+        # center of world is 250, 250. So we add 250 to the x and y coordinates.
+        self.buildings[:, :4] += (self.world_size / 2)
+
         df = pd.DataFrame(self.buildings)
         df.columns = ["x1", "y1", "x2", "y2", "height"]
         df.to_csv(f"{path}.csv", index=False)

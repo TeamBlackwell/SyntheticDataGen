@@ -135,7 +135,7 @@ def add_generate_commands(genparser):
     windflow_parser.add_argument(
         "--pre_time",
         type=int,
-        default=268,
+        default=168,
         help="Pre time for the windflow data",
     )
     # post_time
@@ -149,7 +149,7 @@ def add_generate_commands(genparser):
     windflow_parser.add_argument(
         "--map_size",
         type=int,
-        default=100,
+        default=500,
         help="Side length of map in metres",
     )
 
