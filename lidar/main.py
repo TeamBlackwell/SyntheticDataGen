@@ -70,13 +70,13 @@ def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
     )
 
 
-def run_with_index(data_dir, index, debug=False):
+def run_with_index(data_dir, index, screen_size = 800, padding = 0, debug=True):
     previous_position = (0, 0)
 
     cityimage_path = data_dir / "exportviz" / f"city_{index}.png"
     windflow_path = data_dir / "windflow" / f"city_{index}.npy"
 
-    environment = env.buildEnvironment((800, 800), str(cityimage_path))
+    environment = env.buildEnvironment((screen_size, screen_size), str(cityimage_path))
     environment.originalMap = environment.map.copy()
     laser = lidar.Lidar(200, environment.originalMap, uncertainty=(0.5, 0.01))
     environment.infomap = environment.map.copy()
@@ -112,23 +112,17 @@ def run_with_index(data_dir, index, debug=False):
             pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
             windflow = np.load(str(windflow_path))
 
-            # plotting the lidar data
-            ax.cla()
-            angles = np.linspace(-180, 180, 360, False)
-            ax.fill_between(angles, lidar_data, 0, alpha=0.2, color="r")
-            ax.plot(angles, lidar_data, color="r")
-            # change the limit only for this plot
-            ax.set_ylim(0, 1.5)
-            ax.set_xlabel("Angle (deg)")
-            ax.set_ylabel("D/D_max")
-            ax.set_title("Model Input")
-            fig.canvas.draw()
-            fig.canvas.flush_events()
-            plt.pause(0.005)
+            # fig, ax = plt.subplots()
+            # X, Y = np.meshgrid(np.arange(windflow.shape[1]), np.arange(windflow.shape[0]))
+            # U = windflow[:, :, 0]
+            # V = windflow[:, :, 1]
+            # ax.quiver(X, Y, U, V)
+            # plt.show()
 
+            # TODO: This is hardcoded for now, may need to change this
             data_coords = (
-                (laser.position[0] // 8) + 200,
-                (laser.position[1] // 8) + 200,
+                (laser.position[0] // 8) + 200 - padding,
+                (laser.position[1] // 8) + 200 - padding,
             )
 
             wind_robot = windflow[data_coords[0]][data_coords[1]]
@@ -153,8 +147,14 @@ def run_with_index(data_dir, index, debug=False):
                 + direction_sign[1] * max(min(abs(magnitude * direction[1]), 150), 15),
             )
 
-            if debug:
-                print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
+            # if debug:
+            #     print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
+
+            # wind_robot = (wind_robot[0] - 200, wind_robot[1] - 200)
+            # wind_robot[1] = wind_robot[1] - 200
+
+            # if debug:
+            #     print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
 
             draw_arrow(
                 environment.map,
@@ -166,7 +166,7 @@ def run_with_index(data_dir, index, debug=False):
                 ),
             )
             # run model to get the prediction of the particular index and particular position of the robot
-            prediction = np.random.rand(21, 21, 2)  # 21x21 grid
+            prediction = np.random.rand(11, 11, 2)  # 21x21 grid
             draw_prediction(
                 environment.map,
                 prediction,

@@ -84,19 +84,22 @@ def windflow_visualization(
 
     # Plot windflow vectors
 
+    start_x = int((world_size / 2) - (map_size / 2))
+    start_y = int((world_size / 2) - (map_size / 2))
+    vector_resolution = 3
     if plot_vector:
-        for i in range(0, arr.shape[0], 10):
-            for j in range(0, arr.shape[1], 10):
+        for i in range(start_x, start_x + map_size, vector_resolution):
+            for j in range(start_y, start_y + map_size, vector_resolution):
                 # the scale should be the magnitude of the vector
                 mag = np.linalg.norm(arr[i, j])
                 # scale mag to be between 0 and 150
-                mag = (mag / np.max(mag_array)) * 150
+                mag = (mag / np.max(mag_array)) * 300
 
                 plt.quiver(
                     j,
-                    map_size - i,
+                    world_size - i,
                     arr[i, j, 0],
-                    -arr[i, j, 1],
+                    arr[i, j, 1],
                     color="red",
                     alpha=0.5,
                     scale=mag,
@@ -110,9 +113,9 @@ def windflow_visualization(
     plt.xlim(
         (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
     )
-    print(
-        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
-    )
+    # print(
+    #     (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    # )
     plt.ylim(
         (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
     )
