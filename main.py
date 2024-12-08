@@ -130,7 +130,7 @@ def add_generate_commands(genparser):
         default="data/winds.csv",
         help="Path to the winds.csv file",
     )
-    
+
     # pre_time
     windflow_parser.add_argument(
         "--pre_time",
@@ -189,7 +189,10 @@ def add_vizualiser_commands(viz_parser):
         help="File of the cityscape csv",
     )
     vizsubcity.add_argument(
-        "--map_size", type=int, default=500, help="Side length of map in metres"
+        "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    vizsubcity.add_argument(
+        "--world_size", type=int, default=500, help="Side length of map in metres"
     )
     vizsubcity.add_argument(
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
@@ -211,7 +214,10 @@ def add_vizualiser_commands(viz_parser):
         required=True,
     )
     vizsubwind.add_argument(
-        "--map_size", type=int, default=500, help="Side length of map in metres"
+        "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    vizsubwind.add_argument(
+        "--world_size", type=int, default=500, help="Side length of map in metres"
     )
     vizsubwind.add_argument(
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
@@ -277,8 +283,21 @@ def add_demo_commands(demo_parser):
         required=True,
         help="Index of the data to visualize",
     )
-    
+    demo_parser.add_argument(
+        "--padding",
+        type=int,
+        default=20,
+        help="Padding around the map",
+    )
+    demo_parser.add_argument(
+        "--screen_size",
+        type=int,
+        default=800,
+        help="Size of the screen",
+    )
+
     return demo_parser
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -296,10 +315,8 @@ def main():
         "visualize", aliases=["viz"], help="Visualize the anything"
     )
     viz_parser = add_vizualiser_commands(viz_parser)
-    
-    demo_parser = subprasers.add_parser(
-        "demo", help="Run the demo"
-    )
+
+    demo_parser = subprasers.add_parser("demo", help="Run the demo")
     demo_parser = add_demo_commands(demo_parser)
 
     args = parser.parse_args()
@@ -335,10 +352,10 @@ def main():
 
         if not args.visualize:
             viz_parser.print_help()
-        
+
     elif args.command == "demo":
         h.run_demo(args)
-        
+
     if not args.command:
         parser.print_help()
 

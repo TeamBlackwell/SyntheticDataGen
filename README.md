@@ -12,7 +12,7 @@ Generates the following data:
 - 3D Cityscape using quadtrees for intersection (csv and mat files)
 - PointCloud Data from a simulated LiDAR on a UAV using the MATLAB UAB ToolBox
 
-### Usage
+## Usage
 
 Install the required packages using the following command:
 
@@ -39,6 +39,7 @@ python main.py gen windflow
 ```
 
 Run the following command to save visualisations of the wind flow fields:
+
 ```bash
 python main.py viz wind --index 10 --export-all
 ```
@@ -50,6 +51,7 @@ python main.py gen lidar
 ```
 
 Run the following command to generate transparent cityscapes:
+
 ```bash
 python main.py viz wind --index 10 --export-all-transparent --export-dir data/transparent
 ```
@@ -76,7 +78,7 @@ The 3D LiDAR simulation is conducted using the MATLAB UAV toolbox. MATLAB requir
 
 ### Output File Structure
 
-```
+```txt
 data/
 ├─ cityscapes/
 │  ├─ city_0.csv
@@ -126,8 +128,8 @@ data/
 │  │  ├─ pointcloud_10.csv
 ```
 
-
 ## MATLAB Toolbox requirements
+
 - UAV Toolbox
 - Aerospace Blockset
 - Aerospace Toolbox

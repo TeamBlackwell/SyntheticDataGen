@@ -10,10 +10,12 @@ from pathlib import Path
 
 from utils import make_pastel_colormap
 
+
 def windflow_visualization(
     cityscape_path: Path,
     windflow_path: Path,
     map_size: int,
+    world_size: int,
     fig_size=(5, 5),
     export=None,
     plot_vector=False,
@@ -47,7 +49,43 @@ def windflow_visualization(
     if not transparent:
         plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic", aspect="equal")
     else:
-        plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic", aspect="equal", alpha=0.0)
+        plt.imshow(
+            mag_array,
+            cmap=pastel_jet,
+            interpolation="bicubic",
+            aspect="equal",
+            alpha=0.0,
+        )
+
+
+    # Plot windflow vectors
+
+    start_x = int((world_size / 2) - (map_size / 2))
+    start_y = int((world_size / 2) - (map_size / 2))
+    vector_resolution = 3
+
+    arr = np.rot90(arr, 1)
+    # flip ud
+    arr = np.flipud(arr)
+    if plot_vector:
+        for i in range(start_x, start_x + map_size, vector_resolution):
+            for j in range(start_y, start_y + map_size, vector_resolution):
+                # the scale should be the magnitude of the vector
+                mag = np.linalg.norm(arr[i, j])
+                # scale mag to be between 0 and 150
+                mag = (mag / np.max(mag_array)) * 300
+
+                plt.quiver(
+                    j,
+                    world_size - i,
+                    arr[i, j, 1],
+                    -arr[i, j, 0],
+                    color="red",
+                    alpha=0.5,
+                    scale=mag,
+                    angles="xy",
+                )
+
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
     buildings_df.columns = ["x1", "y1", "x2", "y2", "height"]
@@ -57,8 +95,8 @@ def windflow_visualization(
         building["x1"], building["y1"] = building["y1"], building["x1"]
         building["x2"], building["y2"] = building["y2"], building["x2"]
 
-        building["x1"], building["y1"] = building["y1"], 500 - building["x1"] - 6
-        building["x2"], building["y2"] = building["y2"], 500 - building["x2"] - 6
+        building["x1"], building["y1"] = building["y1"], world_size - building["x1"] - 6
+        building["x2"], building["y2"] = building["y2"], world_size - building["x2"] - 6
 
         plt.gca().add_patch(
             Rectangle(
@@ -72,39 +110,22 @@ def windflow_visualization(
         )
 
 
-    #@TODO: add a quiver arrow showing wind direction, from the bottom left (0, 0).
-    # it should be a red arrow, the text should say "speed: x, y" of the wind
-
-    # Plot windflow vectors
-
-    if plot_vector:
-        for i in range(0, arr.shape[0], 10):
-            for j in range(0, arr.shape[1], 10):
-                # the scale should be the magnitude of the vector
-                mag = np.linalg.norm(arr[i, j])
-                # scale mag to be between 0 and 150
-                mag = (mag / np.max(mag_array)) * 150
-
-                plt.quiver(
-                    j,
-                    map_size - i,
-                    arr[i, j, 0],
-                    -arr[i, j, 1],
-                    color="red",
-                    alpha=0.5,
-                    scale=mag,
-                    angles="xy",
-                )
-
     # Set plot properties
     plt.title("Windflow Visualization")
     plt.xlabel("X Coordinate")
     plt.ylabel("Y Coordinate")
-    plt.xlim(0, map_size)
-    plt.ylim(0, map_size)
+    plt.xlim(
+        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    )
+    # print(
+    #     (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    # )
+    plt.ylim(
+        (world_size / 2) - (map_size / 2), (world_size / 2) - (map_size / 2) + map_size
+    )
     # plt.grid(True, linestyle="--", alpha=0.7)
     # add color bar and name the color bar
-    plt.axis("equal")
+    # plt.axis("equal")
 
     # Show the plot
     plt.tight_layout()
