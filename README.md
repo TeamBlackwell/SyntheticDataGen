@@ -4,6 +4,10 @@ Contains the code for generating data required for the PredictingLocalWindFields
 
 Generates the following data:
 
+- 2D Cityscapes
+- Drone positions
+- 2D LiDAR scan
+- 2D Windflow data
 - 3D Wind flow field using Phiflow
 - 3D Cityscape using quadtrees for intersection (csv and mat files)
 - PointCloud Data from a simulated LiDAR on a UAV using the MATLAB UAB ToolBox
@@ -43,8 +47,14 @@ Run the following command to generate 2D LiDAR scans:
 
 ```bash
 python main.py gen lidar
-
 ```
+
+To the run the interactive demo :video_game:
+
+```bash
+python main.py demo --index 0
+```
+
 The MATLAB files present in this repo must be run from the MATLAB editor application.
 
 ## Notes
@@ -54,6 +64,10 @@ The 3D LiDAR simulation is conducted using the MATLAB UAV toolbox. MATLAB requir
 ### Example PointCloud from Cityscape
 
 ![PointCloud visualisation](./pointcloud.png)
+
+### Example Wind Flow Field with LiDAR Scans
+
+![Wind Flow Field visualisation](./demo.png)
 
 ### Output File Structure
 
@@ -69,11 +83,21 @@ data/
 │  ├─ city_1.csv
 │  ├─ city_(...).csv
 │  ├─ city_60.csv
+├─ exportviz/
+│  ├─ city_0.png
+│  ├─ city_1.png
+│  ├─ city_(...).png
+│  ├─ city_60.png
 ├─ matlab_meshes/
 │  ├─ city_0.mat
 │  ├─ city_1.mat
 │  ├─ city_(...).mat
 │  ├─ city_60.mat
+├─ windflow/
+│  ├─ city_0.npy
+│  ├─ city_1.npy
+│  ├─ city_(...).npy
+│  ├─ city_60.npy
 ├─ pointclouds/
 │  ├─ city_0/
 │  │  ├─ pointcloud_1.csv

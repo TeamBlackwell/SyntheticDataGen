@@ -77,7 +77,7 @@ def draw_prediction(surface, prediction, drone_pos, alpha=0.5):
     )
 
 
-def run_with_index(data_dir, index):
+def run_with_index(data_dir, index,debug=False):
     previous_position = (0, 0)
     from . import env
     from . import lidar_funcs as lidar
@@ -144,7 +144,8 @@ def run_with_index(data_dir, index):
                 + direction_sign[1] * max(min(abs(magnitude * direction[1]), 150), 15),
             )
 
-            print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
+            if debug:
+                print(f"robot_coords and Wind Robot: {laser.position}, {wind_robot}")
             draw_arrow(
                 environment.map,
                 (0, 0, 0),
