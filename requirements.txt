@@ -6,3 +6,9 @@ tqdm
 pandas
 pygame
 seaborn
+
+phiflow
+torch
+jax
+tensorflow
+jaxlib
