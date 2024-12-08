@@ -1,1 +1,1 @@
-from .flow_fields import generate_windflow
+from .flow_fields import batch_generate_windflow

@@ -2,115 +2,18 @@
 CLI for generating data
 """
 
-import argparse
-from cityscapes import batch_export
-from drone import generate_positions
-from windflow import generate_windflow
-from lidar import gen_iterative_lidar
-from visualize import cityscape_visualization, windflow_visualization
-from pathlib import Path
+from os import environ
 
+environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+import argparse
+from pathlib import Path
+import helpers as h
 import warnings
+
 warnings.filterwarnings("ignore")
 
 
-def generate_cityscapes(args):
-    path = Path(args.output_dir)
-    if not path.exists():
-        path.mkdir(parents=True)
-
-    batch_export(
-        path,
-        args.prefix,
-        args.map_size,
-        args.n_cityscapes,
-        args.n_buildings,
-        args.building_density,
-    )
-
-
-def generate_drone_positions(args):
-    cityscapes_dir = Path(args.cityscapes_dir)
-    if not cityscapes_dir.exists() and not cityscapes_dir.is_dir():
-        raise ValueError(f"{cityscapes_dir} does not exist")
-
-    if not Path(args.output_dir).exists():
-        Path(args.output_dir).mkdir(parents=True)
-    generate_positions(cityscapes_dir, args.num_positions, Path(args.output_dir))
-
-
-def create_windflows(args):
-    cityscapes_dir = Path(args.cityscapes_dir)
-    output_dir = Path(args.output_dir)
-    if not cityscapes_dir.exists() and not cityscapes_dir.is_dir():
-        raise ValueError(f"{cityscapes_dir} does not exist")
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True)
-    generate_windflow(cityscapes_dir, output_dir)
-
-
-def generate_matlab():
-    print("To generate the MATLAB meshes please use MATLAB :(")
-
-def generate_lidar_data(args):
-    citymaps_dir = Path(args.citymaps_dir)
-    positions_dir = Path(args.positions_dir)
-    output_dir = Path(args.output_dir)
-
-    if not citymaps_dir.exists() or not citymaps_dir.is_dir():
-        raise ValueError(f"{citymaps_dir} does not exist")
-    if not positions_dir.exists() or not positions_dir.is_dir():
-        raise ValueError(f"{positions_dir} does not exist")
-    
-    if not output_dir.exists():
-        output_dir.mkdir(parents=True)
-    
-    gen_iterative_lidar(citymaps_dir, positions_dir, output_dir)
-
-def visualise_cityscape(args):
-    cityscape_path = Path(args.filename)
-    if not cityscape_path.exists():
-        raise ValueError(f"{cityscape_path} does not exist")
-    
-    args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
-
-    cityscape_visualization(cityscape_path, args.map_size, args.fig_size)
-
-def visualize_windflow(args):
-
-    if not args.export_all:
-        windflow_path = Path(args.data_dir / "windflow" / f"city_{args.index}.npy")
-        cityscape_path = Path(args.data_dir / "cityscapes" / f"city_{args.index}.csv")
-
-        if not windflow_path.exists():
-            raise ValueError(f"{windflow_path} does not exist")
-        if not cityscape_path.exists():
-            raise ValueError(f"{cityscape_path} does not exist")
-    
-    args.fig_size = tuple(map(int, args.fig_size.strip("()").split(",")))
-
-    if args.export_all:
-        print(f"Ignoring value of index and exporting all windflow data in {args.data_dir / 'windflow'} to {args.export_dir}")
-        args.export_dir = Path(args.export_dir)
-        if not args.export_dir.exists():
-            args.export_dir.mkdir(parents=True)
-        
-        for i in (args.data_dir / "windflow").glob("*.npy"):
-            cityscape_path = args.data_dir / "cityscapes" / f"{i.stem}.csv"
-            if not cityscape_path.exists():
-                continue
-            windflow_visualization(cityscape_path, i, args.map_size, args.fig_size, args.export_dir / f"{i.stem}.png")
-    else:
-        windflow_visualization(cityscape_path, windflow_path, args.map_size, args.fig_size, args.export)
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Generate synthetic data for predicting local wind fields"
-    )
-    subprasers = parser.add_subparsers(dest="command")
-
-    genparser = subprasers.add_parser("generate", aliases=["gen"], help="Generate synthetic data")
-
+def add_generate_commands(genparser):
     gensub = genparser.add_subparsers(dest="generate_what")
 
     # Cityscapes
@@ -146,9 +49,7 @@ def main():
     )
 
     # MATLAB
-    _ = gensub.add_parser(
-        "matlab", help="Convert cityscape csv files to MATLAB format"
-    )
+    _ = gensub.add_parser("matlab", help="Convert cityscape csv files to MATLAB format")
 
     # Drone
     drone_parser = gensub.add_parser(
@@ -168,7 +69,18 @@ def main():
         default=10,
         help="Number of drone positions to generate",
     )
-
+    drone_parser.add_argument(
+        "--min_distance",
+        type=int,
+        default=2,
+        help="Minimum distance to buildings (buffer)",
+    )
+    drone_parser.add_argument(
+        "--radius",
+        type=int,
+        default=40,
+        help="Radius of the applicable area from the center of the cityscape",
+    )
     drone_parser.add_argument(
         "--output_dir",
         type=str,
@@ -177,7 +89,9 @@ def main():
     )
 
     # Windflow
-    windflow_parser = gensub.add_parser("windflow", aliases=["wind"], help="Generate windflow data")
+    windflow_parser = gensub.add_parser(
+        "windflow", aliases=["wind"], help="Generate windflow data"
+    )
 
     windflow_parser.add_argument(
         "--cityscapes_dir",
@@ -191,6 +105,49 @@ def main():
         type=str,
         default="data/windflow",
         help="Directory to save windflow data",
+    )
+    # speed x
+    windflow_parser.add_argument(
+        "--speed_x",
+        type=str,
+        default="5",
+        help="Speed in the x direction (can be one or many values)",
+    )
+    # speed y
+    windflow_parser.add_argument(
+        "--speed_y",
+        type=str,
+        default="-5",
+        help="Speed in the y direction (can be one or many values)",
+    )
+    # path to winds.csv
+    windflow_parser.add_argument(
+        "--winds_csv",
+        type=str,
+        default="data/winds.csv",
+        help="Path to the winds.csv file",
+    )
+    
+    # pre_time
+    windflow_parser.add_argument(
+        "--pre_time",
+        type=int,
+        default=268,
+        help="Pre time for the windflow data",
+    )
+    # post_time
+    windflow_parser.add_argument(
+        "--post_time",
+        type=int,
+        default=1,
+        help="Post time for the windflow data (Average window)",
+    )
+    # map size
+    windflow_parser.add_argument(
+        "--map_size",
+        type=int,
+        default=100,
+        help="Side length of map in metres",
     )
 
     lidar_parser = gensub.add_parser("lidar", help="Generate lidar data")
@@ -213,11 +170,14 @@ def main():
         default="data/lidar",
         help="Directory to save lidar data",
     )
+    return genparser
 
-    # Visualisation parser
-    viz_parser = subprasers.add_parser("visualize", aliases=["viz"], help="Visualize the anything")
+
+def add_vizualiser_commands(viz_parser):
     vizsub = viz_parser.add_subparsers(dest="visualize")
-    vizsubcity = vizsub.add_parser("cityscape", aliases=["city"], help="Visualize the cityscape only")
+    vizsubcity = vizsub.add_parser(
+        "cityscape", aliases=["city"], help="Visualize the cityscape only"
+    )
     vizsubcity.add_argument(
         "--filename",
         type=str,
@@ -230,13 +190,20 @@ def main():
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
     )
 
-    vizsubwind = vizsub.add_parser("windflow", aliases=["wind"], help="Visualize the windflow data")
-    vizsubwind.add_argument("--data_dir", type=Path, help="Directory containing windflow data", default="data")
+    vizsubwind = vizsub.add_parser(
+        "windflow", aliases=["wind"], help="Visualize the windflow data"
+    )
+    vizsubwind.add_argument(
+        "--data_dir",
+        type=Path,
+        help="Directory containing windflow data",
+        default="data",
+    )
     vizsubwind.add_argument(
         "--index",
         type=int,
         help="Index of the windflow data to visualize",
-        required=True
+        required=True,
     )
     vizsubwind.add_argument(
         "--map_size", type=int, default=100, help="Side length of map in metres"
@@ -254,32 +221,71 @@ def main():
         "--export-dir", type=Path, default="data/exportviz", help="Export directory"
     )
 
+    vizsubdrone = vizsub.add_parser("drone", help="Visualize the drone positions")
+    vizsubdrone.add_argument(
+        "--data_dir",
+        type=Path,
+        help="Directory containing windflow data",
+        default="data",
+    )
+    vizsubdrone.add_argument(
+        "--index", type=int, help="Index of the drone data to visualize", required=True
+    )
+    vizsubdrone.add_argument(
+        "--map_size", type=int, default=100, help="Side length of map in metres"
+    )
+    vizsubdrone.add_argument(
+        "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
+    )
+
+    return viz_parser
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate synthetic data for predicting local wind fields"
+    )
+    subprasers = parser.add_subparsers(dest="command")
+
+    # generation parser
+    genparser = subprasers.add_parser(
+        "generate", aliases=["gen"], help="Generate synthetic data"
+    )
+    genparser = add_generate_commands(genparser)
+    # visualisation parser
+    viz_parser = subprasers.add_parser(
+        "visualize", aliases=["viz"], help="Visualize the anything"
+    )
+    viz_parser = add_vizualiser_commands(viz_parser)
+
     args = parser.parse_args()
 
     if args.command == "generate" or args.command == "gen":
         if args.generate_what == "cityscapes" or args.generate_what == "city":
-            generate_cityscapes(args)
+            h.generate_cityscapes(args)
         if args.generate_what == "matlab":
-            generate_matlab()
+            h.generate_matlab()
         if args.generate_what == "drone":
-            generate_drone_positions(args)
+            h.generate_drone_positions(args)
         if args.generate_what == "windflow" or args.generate_what == "wind":
-            create_windflows(args)
+            h.create_windflows(args)
         if args.generate_what == "lidar":
-            generate_lidar_data(args)
-        
+            h.generate_lidar_data(args)
+
         if not args.generate_what:
             genparser.print_help()
 
     elif args.command == "visualize" or args.command == "viz":
         if args.visualize == "cityscape" or args.visualize == "city":
-            visualise_cityscape(args)
+            h.visualise_cityscape(args)
         elif args.visualize == "windflow" or args.visualize == "wind":
-            visualize_windflow(args)
-        
+            h.visualize_windflow(args)
+        elif args.visualize == "drone":
+            h.visuaize_drone(args)
+
         if not args.visualize:
             viz_parser.print_help()
-    
+
     if not args.command:
         parser.print_help()
 
