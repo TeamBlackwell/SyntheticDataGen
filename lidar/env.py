@@ -38,11 +38,3 @@ class buildEnvironment:
         for point in pointCloud:
             self.infomap.set_at((int(point[0]), int(point[1])), (0, 255, 0))
             pygame.draw.circle(self.infomap, self.Red, point, 3)
-
-    def show_sensordata(self):
-        pass
-
-    #     self.infomap = self.map.copy()
-    #     for point in self.pointCloud:
-    #         self.infomap.set_at((int(point[0]), int(point[1])), (0, 255, 0))
-    #         pygame.draw.circle(self.infomap, self.Green, point, 3)

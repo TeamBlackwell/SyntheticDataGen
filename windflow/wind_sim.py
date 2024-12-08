@@ -1,5 +1,3 @@
-from pathlib import Path
-from matplotlib import pyplot as plt
 import numpy as np
 from phi.torch import flow
 from tqdm import trange
@@ -79,6 +77,17 @@ def run_flow(
         speed_y,
         range=trange,
     )
+
+    # anim = flow.plot(
+    #     [v_data.curl(), *cuboid_list],
+    #     animate="time",
+    #     size=(6, 6),
+    #     frame_time=10,
+    #     overlay="list",
+    #     # plt_params={"cmap":"coolwarm"},
+    # )
+    # plt.show()
+
 
     v_numpy = v_data.numpy()
 

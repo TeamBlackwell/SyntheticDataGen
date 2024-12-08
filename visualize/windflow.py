@@ -17,6 +17,7 @@ def windflow_visualization(
     fig_size=(5, 5),
     export=None,
     plot_vector=False,
+    transparent=False,
 ):
     """
     Visualize the cityscape with buildings and windflow data
@@ -63,7 +64,8 @@ def windflow_visualization(
 
     # sns.heatmap(mag_array, cmap=pastel_jet)
     # plot the magnitude array
-    plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic")
+    if not transparent:
+        plt.imshow(mag_array, cmap=pastel_jet, interpolation="bicubic")
 
     # Plot buildings
     buildings_df = pd.read_csv(cityscape_path)
@@ -134,7 +136,11 @@ def windflow_visualization(
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         # make it 800x800
         plt.gcf().set_size_inches(8, 8)
-        plt.savefig(export)
+
+        if transparent:
+            plt.savefig(export, transparent=True)
+        else:
+            plt.savefig(export)
     else:
         # plt.colorbar()
         plt.show()

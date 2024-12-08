@@ -27,6 +27,9 @@ def add_generate_commands(genparser):
         "--n_cityscapes", type=int, default=60, help="Number of cityscapes to generate"
     )
     cityscapes_parser.add_argument(
+        "--continue", dest="cont", action="store_true", help="Continue from last"
+    )
+    cityscapes_parser.add_argument(
         "--map_size", type=int, default=100, help="Side length of map in metres"
     )
     cityscapes_parser.add_argument(
@@ -226,6 +229,12 @@ def add_vizualiser_commands(viz_parser):
         "--plot-vector",
         default=False,
         help="Plot the wind vectors",
+        action="store_true",
+    )
+    vizsubwind.add_argument(
+        "--export-all-transparent",
+        default=False,
+        help="Export all figures with transparent background",
         action="store_true",
     )
 
