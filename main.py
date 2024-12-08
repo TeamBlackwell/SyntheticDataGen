@@ -170,6 +170,8 @@ def add_generate_commands(genparser):
         default="data/lidar",
         help="Directory to save lidar data",
     )
+
+    all_parser = gensub.add_parser("all", help="Generate all data")
     return genparser
 
 
@@ -298,6 +300,12 @@ def main():
             h.create_windflows(args)
         if args.generate_what == "lidar":
             h.generate_lidar_data(args)
+        if args.generate_what == "all":
+            print("Not implemented yet.")
+            # h.generate_cityscapes(args)
+            # h.generate_drone_positions(args)
+            # h.create_windflows(args)
+            # h.generate_lidar_data(args)
 
         if not args.generate_what:
             genparser.print_help()
