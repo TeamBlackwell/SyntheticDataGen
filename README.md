@@ -42,6 +42,7 @@ python main.py viz wind --index 10 --export-all
 Run the following command to generate 2D LiDAR scans:
 
 ```bash
+python main.py gen lidar
 
 ```
 The MATLAB files present in this repo must be run from the MATLAB editor application.
