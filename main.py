@@ -3,12 +3,15 @@ CLI for generating data
 """
 
 from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
+environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import argparse
 from pathlib import Path
 import helpers as h
 import warnings
+
 warnings.filterwarnings("ignore")
+
 
 def add_generate_commands(genparser):
     gensub = genparser.add_subparsers(dest="generate_what")
@@ -46,9 +49,7 @@ def add_generate_commands(genparser):
     )
 
     # MATLAB
-    _ = gensub.add_parser(
-        "matlab", help="Convert cityscape csv files to MATLAB format"
-    )
+    _ = gensub.add_parser("matlab", help="Convert cityscape csv files to MATLAB format")
 
     # Drone
     drone_parser = gensub.add_parser(
@@ -77,7 +78,9 @@ def add_generate_commands(genparser):
     )
 
     # Windflow
-    windflow_parser = gensub.add_parser("windflow", aliases=["wind"], help="Generate windflow data")
+    windflow_parser = gensub.add_parser(
+        "windflow", aliases=["wind"], help="Generate windflow data"
+    )
 
     windflow_parser.add_argument(
         "--cityscapes_dir",
@@ -115,9 +118,12 @@ def add_generate_commands(genparser):
     )
     return genparser
 
+
 def add_vizualiser_commands(viz_parser):
     vizsub = viz_parser.add_subparsers(dest="visualize")
-    vizsubcity = vizsub.add_parser("cityscape", aliases=["city"], help="Visualize the cityscape only")
+    vizsubcity = vizsub.add_parser(
+        "cityscape", aliases=["city"], help="Visualize the cityscape only"
+    )
     vizsubcity.add_argument(
         "--filename",
         type=str,
@@ -130,13 +136,20 @@ def add_vizualiser_commands(viz_parser):
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
     )
 
-    vizsubwind = vizsub.add_parser("windflow", aliases=["wind"], help="Visualize the windflow data")
-    vizsubwind.add_argument("--data_dir", type=Path, help="Directory containing windflow data", default="data")
+    vizsubwind = vizsub.add_parser(
+        "windflow", aliases=["wind"], help="Visualize the windflow data"
+    )
+    vizsubwind.add_argument(
+        "--data_dir",
+        type=Path,
+        help="Directory containing windflow data",
+        default="data",
+    )
     vizsubwind.add_argument(
         "--index",
         type=int,
         help="Index of the windflow data to visualize",
-        required=True
+        required=True,
     )
     vizsubwind.add_argument(
         "--map_size", type=int, default=100, help="Side length of map in metres"
@@ -153,14 +166,16 @@ def add_vizualiser_commands(viz_parser):
     vizsubwind.add_argument(
         "--export-dir", type=Path, default="data/exportviz", help="Export directory"
     )
-    
+
     vizsubdrone = vizsub.add_parser("drone", help="Visualize the drone positions")
-    vizsubdrone.add_argument("--data_dir", type=Path, help="Directory containing windflow data", default="data")
     vizsubdrone.add_argument(
-        "--index",
-        type=int,
-        help="Index of the drone data to visualize",
-        required=True
+        "--data_dir",
+        type=Path,
+        help="Directory containing windflow data",
+        default="data",
+    )
+    vizsubdrone.add_argument(
+        "--index", type=int, help="Index of the drone data to visualize", required=True
     )
     vizsubdrone.add_argument(
         "--map_size", type=int, default=100, help="Side length of map in metres"
@@ -171,6 +186,7 @@ def add_vizualiser_commands(viz_parser):
 
     return viz_parser
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate synthetic data for predicting local wind fields"
@@ -178,10 +194,14 @@ def main():
     subprasers = parser.add_subparsers(dest="command")
 
     # generation parser
-    genparser = subprasers.add_parser("generate", aliases=["gen"], help="Generate synthetic data")
+    genparser = subprasers.add_parser(
+        "generate", aliases=["gen"], help="Generate synthetic data"
+    )
     genparser = add_generate_commands(genparser)
     # visualisation parser
-    viz_parser = subprasers.add_parser("visualize", aliases=["viz"], help="Visualize the anything")
+    viz_parser = subprasers.add_parser(
+        "visualize", aliases=["viz"], help="Visualize the anything"
+    )
     viz_parser = add_vizualiser_commands(viz_parser)
 
     args = parser.parse_args()
@@ -197,7 +217,7 @@ def main():
             h.create_windflows(args)
         if args.generate_what == "lidar":
             h.generate_lidar_data(args)
-        
+
         if not args.generate_what:
             genparser.print_help()
 
@@ -211,7 +231,7 @@ def main():
 
         if not args.visualize:
             viz_parser.print_help()
-    
+
     if not args.command:
         parser.print_help()
 

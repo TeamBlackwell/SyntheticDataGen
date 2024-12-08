@@ -97,7 +97,6 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
     lidar_data = []
     x1, y1 = position[0], position[1]
 
-
     for angle in np.linspace(0, 2 * math.pi, 360, False):
         x2, y2 = x1 + range_ * math.cos(angle), y1 - range_ * math.sin(angle)
         added = False
@@ -125,7 +124,7 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
                     added = True
         if not added:
             distance = range_
-            lidar_data.append(distance) 
+            lidar_data.append(distance)
 
     lidar_data = np.array(lidar_data) / range_
 

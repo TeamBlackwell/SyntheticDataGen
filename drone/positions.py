@@ -69,4 +69,3 @@ def generate_positions(cityscapes_dir: Path, num_positions: int, out_dir: Path):
 
         out_file = out_dir / cityscape_file.name
         positions_df.to_csv(out_file, index=False)
-

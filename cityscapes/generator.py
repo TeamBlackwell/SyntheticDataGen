@@ -59,7 +59,7 @@ class CityScapeGenerator(object):
             self.debug_ax[0][1] = self.qtree.plot(self.debug_ax[0][1])
             self.debug_ax[0][0].legend(["Skyscrapers", "Houses"])
         self.populate_with_buildings()
-      
+
         if show:
             plt.show()
 
@@ -111,7 +111,8 @@ class CityScapeGenerator(object):
         df.columns = ["x1", "y1", "x2", "y2", "height"]
         df.to_csv(f"{path}.csv", index=False)
 
-        #self.robot_coords.to_csv(f"{path}_robot.csv", index=False)
+        # self.robot_coords.to_csv(f"{path}_robot.csv", index=False)
+
 
 def plot_building(coords, ax):
     ax.add_patch(
@@ -130,11 +131,13 @@ def make_buildings(tag, node, *, debug=False) -> List[npt.NDArray]:
         case Tag.HOUSE:
             return make_square_buildings(node, debug=debug)
 
+
 def make_square_buildings(node, *, debug):
     point = Point(node.x0 + node.width // 2, node.y0 + node.height // 2, 3)
     x1, y1, x2, y2 = get_bounds_of_house(point, node)
     height = 25
     return [np.array([x1, y1, x2, y2, height])]
+
 
 def make_house_buildings(node, *, debug):
     ans = []

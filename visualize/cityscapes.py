@@ -3,7 +3,8 @@ import pandas as pd
 from matplotlib.patches import Rectangle
 from pathlib import Path
 
-def cityscape_visualization(cityscape_path: Path, map_size: int, fig_size = (5, 5)):
+
+def cityscape_visualization(cityscape_path: Path, map_size: int, fig_size=(5, 5)):
     """
     Visualize the cityscape with buildings
 
