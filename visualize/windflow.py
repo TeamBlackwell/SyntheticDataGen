@@ -36,6 +36,8 @@ def windflow_visualization(
     # r = winds_df[winds_df["cityscape"] == str(cityscape_path)] # get the row
     # wind_dirn = r["speed_x"].values[0], r["speed_y"].values[0]
 
+    plt.style.use('dark_background')
+
     plt.figure(figsize=fig_size)
 
     arr = np.load(windflow_path)
@@ -63,12 +65,15 @@ def windflow_visualization(
             alpha=0.0,
         )
 
+    if not export:
+        cbar = plt.colorbar()
+        cbar.set_label('Velocity Magnitude')
 
     # Plot windflow vectors
 
     start_x = int((world_size / 2) - (map_size / 2))
     start_y = int((world_size / 2) - (map_size / 2))
-    vector_resolution = 3
+    vector_resolution = 5
 
     arr = np.rot90(arr, 1)
     # flip ud
@@ -152,7 +157,6 @@ def windflow_visualization(
         else:
             plt.savefig(export)
     else:
-        plt.colorbar()
         plt.show()
 
     # # Plot windflow data
