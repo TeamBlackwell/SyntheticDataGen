@@ -60,17 +60,26 @@ def rename(data_dir, out_data_dir, start_count):
 
 
 def train_test_split(data_dir, out_data_dir, split_ratio):
-    
+
+    data_dir = Path(data_dir)
+    out_data_dir = Path(out_data_dir)
+    split_ratio = float(split_ratio)
+
+    print("Copying...")
     # copy data_dir to out_data_dir, all its files and subfile
     shutil.copytree(data_dir, out_data_dir / "train")
     shutil.copytree(data_dir, out_data_dir / "val")
+
+    print("Copy Complete...")
 
     # split_ratio = 0.8
     # read data_dir / "lidar_positions".csv and get unique city_id count
     # get unique city_id count
     df = pd.read_csv(data_dir / "lidar_positions.csv")
     city_ids = df["city_id"].unique()
+
     train_count = int(len(city_ids) * split_ratio)
+
     train_city_ids = city_ids[:train_count]
     test_city_ids = city_ids[train_count:]
 
@@ -83,6 +92,8 @@ def train_test_split(data_dir, out_data_dir, split_ratio):
     df = pd.read_csv(out_data_dir / "val" / "lidar_positions.csv")
     df = df[df["city_id"].isin(test_city_ids)]
     df.to_csv(out_data_dir / "val" / "lidar_positions.csv", index=False)
+
+    print("CSVs updated with split")
 
 if __name__ == "__main__":
 
