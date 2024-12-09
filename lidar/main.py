@@ -165,8 +165,8 @@ def run_with_index(data_dir, index, screen_size=800, padding=0, debug=False):
 
             # TODO: This is hardcoded for now, may need to change this
             data_coords = (
-                (laser.position[0] // 8) + 200 - padding,
-                (laser.position[1] // 8) + 200 - padding,
+                (laser.position[0] // 8) + 25 - padding,
+                (laser.position[1] // 8) + 25 - padding,
             )
             wind_robot = windflow[data_coords[0]][data_coords[1]]
 
