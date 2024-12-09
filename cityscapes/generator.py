@@ -183,6 +183,7 @@ def batch_export(
     cont: bool,
     name_prefix: str,
     map_size: int,
+    world_size: int,
     n_cityscapes: int,
     n_buildings: int,
     building_density: int,
@@ -213,6 +214,7 @@ def batch_export(
                 ),
             ],
             map_size=map_size,
+            world_size=world_size,
         )
         proc_gen.generate_sample()
 

@@ -33,6 +33,9 @@ def add_generate_commands(genparser):
         "--map_size", type=int, default=100, help="Side length of map in metres"
     )
     cityscapes_parser.add_argument(
+        "--world_size", type=int, default=500, help="Side length of world in metres"
+    )
+    cityscapes_parser.add_argument(
         "--n_buildings",
         type=int,
         default=32,

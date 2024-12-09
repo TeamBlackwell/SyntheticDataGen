@@ -25,6 +25,7 @@ def generate_cityscapes(args):
         args.cont,
         "city",
         args.map_size,
+        args.world_size,
         args.n_cityscapes,
         args.n_buildings,
         args.building_density,

@@ -1,6 +1,7 @@
 import numpy as np
 from phi.torch import flow
 from tqdm import trange
+from scipy.interpolate import RectBivariateSpline
 
 
 @flow.math.jit_compile
@@ -103,7 +104,6 @@ def run_flow(
     x_data = x_data[pre_time:, :, :]
     y_data = y_data[pre_time:, :, :]
 
-    # print(x_data.shape, y_data.shape)
     x_data = np.mean(x_data, axis=0)
     y_data = np.mean(y_data, axis=0)
 

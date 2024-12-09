@@ -30,11 +30,11 @@ def windflow_visualization(
     - map_size: side length of the cityscape in meters.
     """
 
-    # get the wind dirn from data/winds.csv
-    winds_df = pd.read_csv("data/winds.csv")
-    # get correct row, index on cityscape
-    r = winds_df[winds_df["cityscape"] == str(cityscape_path)] # get the row
-    wind_dirn = r["speed_x"].values[0], r["speed_y"].values[0]
+    # # get the wind dirn from data/winds.csv
+    # winds_df = pd.read_csv("data/winds.csv")
+    # # get correct row, index on cityscape
+    # r = winds_df[winds_df["cityscape"] == str(cityscape_path)] # get the row
+    # wind_dirn = r["speed_x"].values[0], r["speed_y"].values[0]
 
     plt.figure(figsize=fig_size)
 
@@ -116,7 +116,7 @@ def windflow_visualization(
         )
 
     # make a singular quiver at 1, 1
-    plt.quiver(201, 201, wind_dirn[0], wind_dirn[1], scale=10, color="blue", angles="xy")
+    # plt.quiver(201, 201, wind_dirn[0], wind_dirn[1], scale=10, color="blue", angles="xy")
 
     # Set plot properties
     plt.title("Windflow Visualization")
