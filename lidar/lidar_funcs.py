@@ -83,6 +83,8 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
     width = binary_map_mask.shape[1]
     height = binary_map_mask.shape[0]
 
+    print(width, height)
+
     data = []
     lidar_data = []
     x1, y1 = position[0], position[1]
@@ -147,6 +149,9 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
         city_map = city_map.convert("RGB")
         city_map = np.array(city_map)
         binary_map = binarize_citymap_image(city_map)
+        # TODO: change this if you ever change display padding
+        binary_map = binary_map[20 * 8:80 * 8, 20 * 8:80 * 8]
+
         city_id = city.stem.split("_")[1]
 
         corresponding_positions = positions_dir / f"{city.stem}.csv"
@@ -158,6 +163,9 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
             position = (positions.iloc[i]["xr"], positions.iloc[i]["yr"])
             lidar_positions_df.loc[idx] = [city_id, i, position[0], position[1]]
             # scale to 800x800 map by multiplying above by 800/100
+            # manipulate the position to be in the correct scale
+            position = (position[0] - 200, position[1] - 200)
+            # above is 100x100
             scaled_position = (position[0] * 8, position[1] * 8)
 
             lidar_output = run_lidar_only(

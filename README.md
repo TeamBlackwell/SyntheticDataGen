@@ -23,13 +23,13 @@ pip install -r requirements.txt
 Run the following command to generate the cityscapes:
 
 ```bash
-python main.py gen cityscapes --n_cityscapes 60 --map_size 100 --n_buildings 20  
+python main.py gen cityscapes
 ```
 
 Run the following command to generate drone positions:
 
 ```bash
-python main.py gen drone --num_positions 10 --min_distance 4 --radius 45
+python main.py gen drone
 ```
 
 Run the following command to generate wind flow fields:
@@ -50,10 +50,16 @@ Run the following command to generate 2D LiDAR scans:
 python main.py gen lidar
 ```
 
+Run the following command to generate demo viz cityscapes:
+
+```bash
+python main.py viz wind --index 10 --export-all --export-dir data/demoviz --map_size 140
+```
+
 Run the following command to generate transparent cityscapes:
 
 ```bash
-python main.py viz wind --index 10 --export-all-transparent --export-dir data/transparent
+python main.py viz wind --index 10 --export-all-transparent  --map_size 140 --export-dir data/transparent
 ```
 
 To the run the interactive demo :video_game:

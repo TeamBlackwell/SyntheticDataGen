@@ -3,11 +3,13 @@ import pygame
 
 
 class buildEnvironment:
-    def __init__(self, MapDimensions, path):
+    def __init__(self, map_dimensions: tuple[int, int], path_to_map_file: str):
         pygame.init()
-        self.externalMap = pygame.image.load(path)
-        self.maph, self.mapw = MapDimensions
-        self.MapWindowName = "2d Lidar simulation"
+        self.base_map_image = pygame.image.load(path_to_map_file)
+
+        self.maph, self.mapw = map_dimensions
+
+        self.MapWindowName = "2D Lidar Simulation"
 
         pygame.display.set_caption(self.MapWindowName)
         self.map = pygame.display.set_mode((self.mapw, self.maph))
@@ -33,7 +35,7 @@ class buildEnvironment:
                 point = self.AD2pos(element[0], element[1], element[2])
                 if point not in pointCloud:
                     pointCloud.append(point)
-        self.infomap = self.map.copy()
+        # self.infomap = self.map.copy()
         for point in pointCloud:
-            self.infomap.set_at((int(point[0]), int(point[1])), (0, 255, 0))
-            pygame.draw.circle(self.infomap, self.Red, point, 3)
+            self.map.set_at((int(point[0]), int(point[1])), (0, 255, 0))
+            pygame.draw.circle(self.map, self.Red, point, 3)
