@@ -4,6 +4,7 @@ from tqdm import tqdm
 
 from cityscapes import batch_export
 from drone import batch_export_robot
+from visualize.lidar import plot_lidar
 from windflow import batch_generate_windflow
 from lidar import gen_iterative_lidar, run_with_index
 from visualize import (
@@ -196,6 +197,8 @@ def visuaize_drone(args):
 
     drone_visualization(map_path, drone_path, args.map_size, args.fig_size)
 
+def visualize_lidar(args):
+    plot_lidar(args.index)
 
 def run_demo(args):
 

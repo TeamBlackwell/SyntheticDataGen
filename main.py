@@ -270,6 +270,10 @@ def add_vizualiser_commands(viz_parser):
         "--fig_size", type=str, default="(5, 5)", help="Size of the figure"
     )
 
+    vizsublidar = vizsub.add_parser("lidar", help="Visualize the lidar data")
+    vizsublidar.add_argument(
+        "--index", type=int, help="Index of the lidar data to visualize", required=True
+    )
     return viz_parser
 
 
@@ -352,6 +356,8 @@ def main():
             h.visualize_windflow(args)
         elif args.visualize == "drone":
             h.visuaize_drone(args)
+        elif args.visualize == "lidar":
+            h.visualize_lidar(args)
 
         if not args.visualize:
             viz_parser.print_help()

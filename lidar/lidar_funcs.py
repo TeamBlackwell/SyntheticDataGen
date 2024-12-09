@@ -138,6 +138,9 @@ def binarize_citymap_image(rgb_image):
 
 def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
 
+    world_size = 150
+    map_size = 100
+
     lidar_positions_df = pd.DataFrame(columns=["city_id", "position_id", "xr", "yr"])
 
     idx = 0
@@ -164,7 +167,8 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
             lidar_positions_df.loc[idx] = [city_id, i, position[0], position[1]]
             # scale to 800x800 map by multiplying above by 800/100
             # manipulate the position to be in the correct scale
-            position = (position[0] - 200, position[1] - 200)
+            position = (position[0] - ((world_size / 2) - (map_size / 2)), position[1] - ((world_size / 2) - (map_size / 2)))
+            print(position)
             # above is 100x100
             scaled_position = (position[0] * 8, position[1] * 8)
 
