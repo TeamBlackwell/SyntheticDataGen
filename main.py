@@ -293,7 +293,7 @@ def add_demo_commands(demo_parser):
     demo_parser.add_argument(
         "--padding",
         type=int,
-        default=20,
+        default=25,
         help="Padding around the map",
     )
     demo_parser.add_argument(

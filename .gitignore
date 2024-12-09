@@ -13,3 +13,5 @@ data*
 test_*.png
 
 prediction.png
+
+test_quick_fixed.ipynb
