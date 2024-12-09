@@ -168,7 +168,7 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
             # scale to 800x800 map by multiplying above by 800/100
             # manipulate the position to be in the correct scale
             position = (position[0] - ((world_size / 2) - (map_size / 2)), position[1] - ((world_size / 2) - (map_size / 2)))
-            print(position)
+            # print(position)
             # above is 100x100
             scaled_position = (position[0] * 8, position[1] * 8)
 
