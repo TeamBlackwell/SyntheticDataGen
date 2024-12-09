@@ -39,12 +39,14 @@ def generate_drone_positions(args):
     if not Path(args.output_dir).exists():
         Path(args.output_dir).mkdir(parents=True)
 
+    args.radius_choices = list(map(int, args.radius.split(",")))
+
     batch_export_robot(
         args.output_dir,
         cityscapes_dir,
         args.num_positions,
         args.min_distance,
-        args.radius,
+        args.radius_choices,
     )
 
 

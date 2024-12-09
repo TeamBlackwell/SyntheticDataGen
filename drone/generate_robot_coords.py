@@ -111,9 +111,10 @@ def generate_robot_coordinates(
 
 
 def batch_export_robot(
-    robot_dir, data_directory, n_positions, min_distance, center_radius
+    robot_dir, data_directory, n_positions, min_distance, center_radius_choices
 ):
     for filename in tqdm(glob(os.path.join(data_directory, "*"))):
+        center_radius = np.random.choice(center_radius_choices)
         generate_robot_coordinates(
             robot_dir, filename, n_positions, min_distance, center_radius
         )

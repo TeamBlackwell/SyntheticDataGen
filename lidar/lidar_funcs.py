@@ -83,7 +83,7 @@ def run_lidar_only(range_, uncertainty, binary_map_mask, position):
     width = binary_map_mask.shape[1]
     height = binary_map_mask.shape[0]
 
-    print(width, height)
+    # print(width, height)
 
     data = []
     lidar_data = []
@@ -150,7 +150,7 @@ def gen_iterative_lidar(citymaps_dir, positions_dir, output_dir):
         city_map = np.array(city_map)
         binary_map = binarize_citymap_image(city_map)
         # TODO: change this if you ever change display padding
-        binary_map = binary_map[20 * 8:80 * 8, 20 * 8:80 * 8]
+        # binary_map = binary_map[80 * 8, 20 * 8:80 * 8]
 
         city_id = city.stem.split("_")[1]
 

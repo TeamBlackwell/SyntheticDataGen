@@ -80,9 +80,9 @@ def add_generate_commands(genparser):
     )
     drone_parser.add_argument(
         "--radius",
-        type=int,
-        default=40,
-        help="Radius of the applicable area from the center of the cityscape",
+        type=str,
+        default="40",
+        help="Radius of the applicable area from the center of the cityscape (one or more values)",
     )
     drone_parser.add_argument(
         "--output_dir",

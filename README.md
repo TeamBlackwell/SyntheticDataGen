@@ -59,7 +59,7 @@ python main.py viz wind --index 10 --export-all --export-dir data/demoviz --map_
 Run the following command to generate transparent cityscapes:
 
 ```bash
-python main.py viz wind --index 10 --export-all-transparent  --map_size 140 --export-dir data/transparent
+python main.py viz wind --index 10 --export-all-transparent --map_size 140 --export-dir data/transparent
 ```
 
 To the run the interactive demo :video_game:
