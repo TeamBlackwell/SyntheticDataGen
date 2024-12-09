@@ -13,14 +13,9 @@ class buildEnvironment:
 
         pygame.display.set_caption(self.MapWindowName)
         self.map = pygame.display.set_mode((self.mapw, self.maph))
-        self.map.blit(self.externalMap, (0, 0))
+        self.map.blit(self.base_map_image, (0, 0))
 
-        self.black = (0, 0, 0)
-        self.grey = (128, 128, 128)
-        self.Blue = (0, 0, 255)
-        self.Green = (0, 255, 0)
-        self.Red = (255, 0, 0)
-        self.White = (255, 255, 255)
+        self.red_color = (255, 0, 0)
 
     def AD2pos(self, distance, angle, robotPosition):
         x = distance * math.cos(angle) + robotPosition[0]
@@ -28,7 +23,7 @@ class buildEnvironment:
         return (int(x), int(y))
 
     def dataStorage(self, data):
-        self.map.blit(self.externalMap, (0, 0))
+        self.map.blit(self.base_map_image, (0, 0))
         pointCloud = []
         if data != False:
             for element in data:
@@ -38,4 +33,4 @@ class buildEnvironment:
         # self.infomap = self.map.copy()
         for point in pointCloud:
             self.map.set_at((int(point[0]), int(point[1])), (0, 255, 0))
-            pygame.draw.circle(self.map, self.Red, point, 3)
+            pygame.draw.circle(self.map, self.red_color, point, 3)

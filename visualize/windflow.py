@@ -73,7 +73,7 @@ def windflow_visualization(
                 # the scale should be the magnitude of the vector
                 mag = np.linalg.norm(arr[i, j])
                 # scale mag to be between 0 and 150
-                mag = (mag / np.max(mag_array)) * 300
+                # mag = (mag / np.max(mag_array)) * 500
 
                 plt.quiver(
                     j,
@@ -82,7 +82,7 @@ def windflow_visualization(
                     -arr[i, j, 0],
                     color="red",
                     alpha=0.5,
-                    scale=mag,
+                    scale=500,
                     angles="xy",
                 )
 

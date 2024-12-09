@@ -1,4 +1,5 @@
 import io
+import time
 import numpy as np
 import pygame
 import math
@@ -10,10 +11,8 @@ from PIL import Image
 from matplotlib.gridspec import GridSpec
 import os
 import matplotlib
+import matplotlib.animation as animation
 matplotlib.use('TkAgg')  # for positioning the plot window support on both MacOS and Windows systems
-
-fig2, ax2 = plt.subplots()
-fig2.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
 def draw_arrow(surface, color, start, end, width=5, head_length=15, head_width=10):
     """
@@ -43,12 +42,15 @@ def draw_arrow(surface, color, start, end, width=5, head_length=15, head_width=1
     pygame.draw.polygon(surface, color, [end, head_end1, head_end2])
 
 def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
+
+    plt.ioff()
+    fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(1, 1))
     prediction = np.linalg.norm(prediction, axis=2)
-    ax2.axis("off")
-    ax2.imshow(prediction, cmap=cmap, interpolation="bicubic")
+    ax.axis("off")
+    ax.imshow(prediction, cmap=cmap, interpolation="bicubic")
     buf = io.BytesIO()
-    fig2.savefig(buf, format="png", dpi=50, bbox_inches="tight", pad_inches=0)
-    plt.close(fig2)
+    fig.savefig(buf, format="png", dpi=50, bbox_inches="tight", pad_inches=0)
+    plt.close(fig)
     buf.seek(0)
     pl = (
         Image.open(buf)
@@ -70,27 +72,66 @@ def draw_prediction(surface, prediction, drone_pos, cmap, alpha=0.5):
     )
     
 
-def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
+def get_prediction(wind_robot, lidar_data, position):
+    # Placeholder for now
+    return np.random.rand(11, 11, 2), np.random.rand(11, 11, 1), np.random.rand(11, 11, 1)
+
+def run_with_index(data_dir, index, screen_size=800, padding=0, debug=False):
+
+    # fig, ax = plt.subplots(ncols=1, nrows=1, figsize=(7, 7))
+    fig = plt.figure(constrained_layout=True, figsize=(7, 7))
+    axs = fig.subplot_mosaic([['Top', 'Top'],['BottomLeft', 'BottomRight']],
+                          gridspec_kw={'height_ratios':[1, 2]})
+    
+    plt.ioff()
+    # make equal
+    VEL_ERR = axs["BottomLeft"]
+    DIR_ERR = axs["BottomRight"]
+    LID_SCAN = axs["Top"]
+
+    VEL_ERR.set_aspect('equal', 'box')
+    DIR_ERR.set_aspect('equal', 'box')
+
+    VEL_ERR.set_title("Velocity Error (m/s)")
+    DIR_ERR.set_title("Direction Error (deg)")
+    LID_SCAN.set_title("Lidar Scan")
+    LID_SCAN.set_xlabel("Angle (deg)")
+    LID_SCAN.set_ylabel("D/D_max")
+
+    dummy_data = np.zeros(shape=(11, 11))
+    VEL_ERR.imshow(dummy_data, cmap="jet", interpolation="bicubic")
+    DIR_ERR.imshow(dummy_data, cmap="jet", interpolation="bicubic")
+
+    dummy_lidar = np.zeros(360)
+    LID_SCAN.fill_between(np.linspace(-180, 180, 360, False), dummy_lidar, 0, alpha=0.2, color="r")
+    LID_PLOT, = LID_SCAN.plot(np.linspace(-180, 180, 360, False), dummy_lidar, color="r")
+    LID_SCAN.set_ylim(0, 1.5)
+    fig.show()
+    # Move the plot window to the left
+    mng = plt.get_current_fig_manager()
+    mng.window.wm_geometry("+0+10")
+
     pygame.init()
     screen_info = pygame.display.Info()
     x = screen_info.current_w - screen_size - 10
     y = 50
     os.environ["SDL_VIDEO_WINDOW_POS"] = "%d,%d" % (x, y)
 
-    fig = plt.figure(figsize=(7, 7))  # Overall figure size
     cmap = utils.make_pastel_colormap("jet", blend_factor=0.5)
-    # Move the plot window to the left
-    mng = plt.get_current_fig_manager()
-    mng.window.wm_geometry("+0+10")
 
     cityimage_path = data_dir / "demoviz" / f"city_{index}.png"
     windflow_path = data_dir / "windflow" / f"city_{index}.npy"
+
+    windflow = np.load(str(windflow_path))
 
     environment = env.buildEnvironment((screen_size, screen_size), str(cityimage_path))
     # environment.originalMap = environment.map.copy()
     laser = lidar.Lidar(200, environment.map, uncertainty=(0.5, 0.01))
     # environment.infomap = environment.map.copy()
 
+    imgtrans = pygame.image.load(
+        f"data/transparent/city_{index}_transparent.png"
+    )
     # state variables
     running = True
     plot_data = []
@@ -98,6 +139,7 @@ def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
     previous_position = (0, 0)
 
     while running:
+        environment.map.blit(environment.map, (0, 0))
         sensorON = False
 
         for event in pygame.event.get():
@@ -115,56 +157,30 @@ def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
             if position != previous_position:
                 sensor_data, lidar_data = laser.sense_obstacles()
                 environment.dataStorage(sensor_data)
+
         if laser.position != previous_position:
-            environment.map.blit(environment.map, (0, 0))
+
             pygame.draw.circle(environment.map, (255, 0, 0), laser.position, 5)
-            windflow = np.load(str(windflow_path))
 
-            pred_mag_error = np.random.rand(11, 11, 1)
-            pred_deg_error = np.random.rand(11, 11, 1)
 
-            plot_data = [lidar_data, pred_mag_error, pred_deg_error]
-
-            plt.ion()
-            gs = GridSpec(2, 2, height_ratios=[2, 1])
-            fig_ax1 = fig.add_subplot(gs[0, :])
-            fig_ax2 = fig.add_subplot(gs[1, 0])
-            fig_ax3 = fig.add_subplot(gs[1, 1])
-
-            # plotting the lidar data
-            fig_ax1.cla()
-            angles = np.linspace(-180, 180, 360, False)
-            fig_ax1.fill_between(angles, plot_data[0], 0, alpha=0.2, color="r")
-            fig_ax1.plot(angles, plot_data[0], color="r")
-            fig_ax1.set_ylim(0, 1.5)
-            fig_ax1.set_xlabel("Angle (deg)")
-            fig_ax1.set_ylabel("D/D_max")
-            fig_ax1.set_title("Model Input")
-            fig_ax2.set_title("Velocity Error (m/s)")
-            fig_ax3.set_title("Direction Error (deg)")
-            fig_ax2.imshow(plot_data[1], cmap=cmap, interpolation="bicubic")
-            fig_ax3.imshow(plot_data[2], cmap=cmap, interpolation="bicubic")
-            cbar_fig_ax2 = fig.add_axes([0.87, 0.08, 0.02, 0.26])
-            cbar_fig_ax3 = fig.add_axes([0.44, 0.08, 0.02, 0.26])
-            fig.colorbar(fig_ax2.images[0], cax=cbar_fig_ax2)
-            fig.colorbar(fig_ax3.images[0], cax=cbar_fig_ax3)
-            fig.canvas.draw()
-            fig.canvas.flush_events()
-            plt.pause(0.000001)
-            
             # TODO: This is hardcoded for now, may need to change this
             data_coords = (
                 (laser.position[0] // 8) + 200 - padding,
                 (laser.position[1] // 8) + 200 - padding,
             )
-
             wind_robot = windflow[data_coords[0]][data_coords[1]]
+
+            prediction_data, pred_mag_error, pred_deg_error = get_prediction(
+                wind_robot, lidar_data, laser.position
+            )
+            plot_data = [lidar_data, pred_mag_error, pred_deg_error]
+            
             if debug:
                 print(f"Laser: {laser.position} | Data: {data_coords}")
 
-            magnitude = math.sqrt(wind_robot[0] ** 2 + wind_robot[1] ** 2)
+            magnitude = np.floor(np.linalg.norm(wind_robot))
             magnitude = math.log1p(magnitude) * 25  # log scaling
-            magnitude = math.floor(magnitude)
+
             angle = math.atan2(wind_robot[1], wind_robot[0])
             if debug: 
                 print(f"Angle: {math.degrees(angle)}, Magnitude: {magnitude}")
@@ -190,19 +206,25 @@ def run_with_index(data_dir, index, screen_size=800, padding=0, debug=True):
                     wind_robot[1],
                 ),
             )
+
             # run model to get the prediction of the particular index and particular position of the robot
-            prediction = np.random.rand(11, 11, 2)  # 21x21 grid
+            # st = time.time()
             draw_prediction(
                 environment.map,
-                prediction,
+                prediction_data,
                 laser.position,
                 cmap=cmap,
                 alpha=0.5,
             )
-
-            imgtrans = pygame.image.load(
-                f"data/transparent/city_{index}_transparent.png"
-            )
+            # print(f"Time taken: {time.time() - st}")
+            # plotting the lidar data
+            LID_PLOT.set_ydata(plot_data[0])
+            VEL_ERR.imshow(plot_data[1], cmap=cmap, interpolation="bicubic")
+            DIR_ERR.imshow(plot_data[2], cmap=cmap, interpolation="bicubic")
+            # fig.colorbar(VEL_ERR, ax=VEL_ERR)
+            fig.canvas.draw_idle()
+            # fig.canvas.flush_events()
+            # plt.pause(0.000001)
             environment.map.blit(imgtrans, (0, 0))
 
         previous_position = laser.position
