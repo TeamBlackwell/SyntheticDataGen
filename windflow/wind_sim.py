@@ -2,7 +2,8 @@ import numpy as np
 from phi.torch import flow
 from tqdm import trange
 from scipy.interpolate import RectBivariateSpline
-
+import matplotlib.pyplot as plt
+plt.style.use("dark_background")
 
 @flow.math.jit_compile
 def _step(v, p, ob_list, bndry_mask, spd_x, spd_y):
@@ -79,15 +80,16 @@ def run_flow(
         range=trange,
     )
 
-    # anim = flow.plot(
-    #     [v_data.curl(), *cuboid_list],
-    #     animate="time",
-    #     size=(6, 6),
-    #     frame_time=10,
-    #     overlay="list",
-    #     # plt_params={"cmap":"coolwarm"},
-    # )
-    # plt.show()
+    anim = flow.plot(
+        [v_data["x"], *cuboid_list],
+        animate="time",
+        size=(6, 6),
+        frame_time=6,
+        overlay="list",
+        # plt_params={"cmap":"coolwarm"},
+    )
+    plt.title("Velocity Field Simulation")
+    plt.show()
 
     v_numpy = v_data.numpy()
 

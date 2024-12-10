@@ -57,11 +57,8 @@ def batch_generate_windflow(
             np.random.choice(len(speed_candidate_list))
         ]
 
-        try:
-            flow = run_flow(cityscape, pre_time, post_time, map_size, speed_x, speed_y)
-        except ValueError:
-            tqdm.write(f"Cityscape {cityscape_file} failed")
-            continue
+
+        flow = run_flow(cityscape, pre_time, post_time, map_size, speed_x, speed_y)    
 
         output_path = output_dir / cityscape_file.name
         np.save(output_path.with_suffix(".npy"), flow)
